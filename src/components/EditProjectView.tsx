@@ -55,6 +55,7 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
     monitoring_interval_minutes: '5',
     log_retention_days: '90',
   });
+  const [originalPasswords, setOriginalPasswords] = useState({ admin_password: '', wp_app_password: '' });
 
   useEffect(() => {
     if (projectId) loadProject();
@@ -74,6 +75,10 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
       return;
     }
 
+    setOriginalPasswords({
+      admin_password: data.admin_password_encrypted || '',
+      wp_app_password: data.wp_app_password_encrypted || '',
+    });
     setForm({
       name: data.name || '',
       url: data.url || '',
@@ -81,9 +86,9 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
       hosting_provider: data.hosting_provider || '',
       admin_url: data.admin_url || '',
       admin_user: data.admin_user || '',
-      admin_password: data.admin_password_encrypted || '',
+      admin_password: '',
       wp_app_user: data.wp_app_user || '',
-      wp_app_password: data.wp_app_password_encrypted || '',
+      wp_app_password: '',
       site_token: data.site_token || '',
       notes: data.notes || '',
       frontend_url: data.frontend_url || '',
@@ -115,9 +120,9 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
       hosting_provider: form.hosting_provider,
       admin_url: form.admin_url,
       admin_user: form.admin_user,
-      admin_password: form.admin_password,
+      admin_password: form.admin_password.trim() || originalPasswords.admin_password,
       wp_app_user: form.wp_app_user,
-      wp_app_password: form.wp_app_password,
+      wp_app_password: form.wp_app_password.trim() || originalPasswords.wp_app_password,
       notes: form.notes,
       frontend_url: form.frontend_url,
       frontend_provider: form.frontend_provider,
@@ -291,7 +296,7 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-text-muted">Contraseña de Aplicación</label>
-                        <input type="password" value={form.wp_app_password} onChange={e => update('wp_app_password', e.target.value)} placeholder="aBcD eFgH iJkL mNoP qRsT uVwX" className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary transition-all" />
+                        <input type="password" value={form.wp_app_password} onChange={e => update('wp_app_password', e.target.value)} placeholder={originalPasswords.wp_app_password ? '(sin cambios — dejar vacío para mantener)' : 'aBcD eFgH iJkL mNoP qRsT uVwX'} className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary transition-all" />
                       </div>
                     </div>
                   </div>
@@ -329,7 +334,7 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
                     <label className="text-sm font-medium text-text-muted">
                       {isWoo ? 'Consumer Secret (cs_...)' : isWpPure ? 'Contraseña de Aplicación (NO la contraseña normal)' : 'Contraseña / Secret'}
                     </label>
-                    <input type="password" value={form.admin_password} onChange={e => update('admin_password', e.target.value)} placeholder={isWoo ? 'cs_xxxxxxxxxxxxxxxx' : isWpPure ? 'aBcD eFgH iJkL mNoP qRsT uVwX' : ''} className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary transition-all" />
+                    <input type="password" value={form.admin_password} onChange={e => update('admin_password', e.target.value)} placeholder={originalPasswords.admin_password ? '(sin cambios — dejar vacío para mantener)' : isWoo ? 'cs_xxxxxxxxxxxxxxxx' : isWpPure ? 'aBcD eFgH iJkL mNoP qRsT uVwX' : ''} className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary transition-all" />
                   </div>
                 </div>
               </>
