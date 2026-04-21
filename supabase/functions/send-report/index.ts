@@ -7,7 +7,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const RESEND_KEY = 're_LdUWjauZ_6HWDLXNkYjv69YrRbiBNh72i';
+const RESEND_KEY = Deno.env.get('RESEND_API_KEY');
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -16,6 +16,13 @@ Deno.serve(async (req) => {
 
   try {
     const { to, subject, html, pdfBase64, pdfFilename } = await req.json();
+
+    if (!RESEND_KEY) {
+      return new Response(
+        JSON.stringify({ error: 'RESEND_API_KEY no configurada en secrets de Supabase' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
 
     if (!to || !subject || !html) {
       return new Response(
