@@ -1,0 +1,75 @@
+---
+const steps = [
+  {
+    number: '01',
+    title: 'Genera tu API Key',
+    description: 'Desde el panel de LuminaSupport, genera tu clave única en un clic. Se copia al portapapeles al instante.',
+    color: 'from-primary to-primary-dark',
+  },
+  {
+    number: '02',
+    title: 'Instala el plugin',
+    description: 'Descarga Lumina Agent y súbelo a tu WordPress como cualquier plugin. Actívalo y listo.',
+    color: 'from-secondary to-secondary-dark',
+  },
+  {
+    number: '03',
+    title: 'Pega tu API Key',
+    description: 'En WP Admin → Ajustes → Lumina Agent, pega la key y guarda. El sitio se conecta automáticamente.',
+    color: 'from-violet-500 to-violet-700',
+  },
+  {
+    number: '04',
+    title: 'Monitoreo activo',
+    description: 'Tu sitio ya está protegido. Monitoreo cada 3 minutos, alertas, SSL, actualizaciones remotas — todo automático.',
+    color: 'from-yellow-500 to-orange-600',
+  },
+];
+---
+
+<section id="how-it-works" class="py-24 lg:py-32 relative">
+  <!-- Background accent -->
+  <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+    <div class="absolute top-1/2 left-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[120px] -translate-y-1/2"></div>
+  </div>
+
+  <div class="section-padding relative z-10">
+    <!-- Section header -->
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <span class="text-xs font-semibold uppercase tracking-widest text-secondary mb-3 block">Cómo funciona</span>
+      <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mb-4">
+        Conecta tu sitio en <span class="gradient-text">menos de 2 minutos</span>
+      </h2>
+      <p class="text-gray-400">
+        Sin configuración compleja. Sin Application Passwords. Solo una API Key.
+      </p>
+    </div>
+
+    <!-- Steps -->
+    <div class="max-w-3xl mx-auto">
+      <div class="space-y-8">
+        {steps.map((step, i) => (
+          <div
+            class="flex gap-6 group"
+            style={`animation: slideUp 0.5s ease-out ${i * 0.1}s both`}
+          >
+            <!-- Number -->
+            <div class="flex flex-col items-center">
+              <div class={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${step.color} text-white font-display text-lg font-bold shadow-lg transition-transform group-hover:scale-110`}>
+                {step.number}
+              </div>
+              {i < steps.length - 1 && (
+                <div class="w-px flex-1 bg-gradient-to-b from-white/10 to-transparent mt-3"></div>
+              )}
+            </div>
+            <!-- Content -->
+            <div class="pb-8">
+              <h3 class="font-display text-xl font-semibold text-white mb-2">{step.title}</h3>
+              <p class="text-gray-400 leading-relaxed">{step.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

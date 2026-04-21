@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'LUMINA_AGENT_VERSION', '3.0.0' );
 define( 'LUMINA_AGENT_OPT', 'lumina_agent_' );
 // URL base de la API de Lumina (Supabase Edge Functions)
-define( 'LUMINA_API_BASE', 'https://vwddlfdhuajgssjqeomm.supabase.co/functions/v1' );
+define( 'LUMINA_API_BASE', 'https://bd.luissalascortes.dev/functions/v1' );
 
 /* ================================================================
    ADMIN MENU — Settings bajo Ajustes
