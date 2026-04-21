@@ -20,7 +20,7 @@ import {
   RefreshCw,
   Puzzle,
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase';
 import LoadingScreen from './LoadingScreen';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts';
 
@@ -157,11 +157,9 @@ export default function PerformanceView() {
     setPluginPerf([]);
     setPluginSummary(null);
     try {
-      const SUPA_URL = import.meta.env.VITE_SUPABASE_URL;
-      const SUPA_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-      const res = await fetch(`${SUPA_URL}/functions/v1/analyze-plugin-performance`, {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/analyze-plugin-performance`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPA_KEY}`, 'apikey': SUPA_KEY },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'apikey': SUPABASE_ANON_KEY },
         body: JSON.stringify({ project_id: projectId }),
       });
       if (res.ok) {

@@ -28,11 +28,9 @@ import {
   Upload,
   Zap
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase';
 import LoadingScreen from './LoadingScreen';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 async function callFetchPlugins(projectId: string): Promise<{ plugins: any[]; api_error: string | null; fetched_count: number; wp_version?: string | null; wp_latest_version?: string | null }> {
   const res = await fetch(`${SUPABASE_URL}/functions/v1/fetch-plugins`, {

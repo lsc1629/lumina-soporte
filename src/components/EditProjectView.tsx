@@ -18,7 +18,7 @@ import {
   RefreshCw,
   ExternalLink,
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase';
 import LoadingScreen from './LoadingScreen';
 
 interface EditProjectViewProps {
@@ -134,15 +134,13 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
     };
 
     // Use save-project Edge Function to encrypt credentials before saving
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
     const { data: { session } } = await supabase.auth.getSession();
-    const saveRes = await fetch(`${supabaseUrl}/functions/v1/save-project`, {
+    const saveRes = await fetch(`${SUPABASE_URL}/functions/v1/save-project`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session?.access_token || anonKey}`,
-        'apikey': anonKey,
+        'Authorization': `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
+        'apikey': SUPABASE_ANON_KEY,
       },
       body: JSON.stringify({ project_id: projectId, data: updateData }),
     });
@@ -173,15 +171,13 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
     setTesting(true);
     setTestResult(null);
     try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
       const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch(`${supabaseUrl}/functions/v1/test-agent-connection`, {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/test-agent-connection`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session?.access_token || anonKey}`,
-          'apikey': anonKey,
+          'Authorization': `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
+          'apikey': SUPABASE_ANON_KEY,
         },
         body: JSON.stringify({ project_id: projectId }),
       });

@@ -15,12 +15,10 @@ import {
   ShieldCheck,
   Clock,
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase';
 import LoadingScreen from './LoadingScreen';
 import { usePreviewClient } from '@/lib/PreviewContext';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 interface ProjectBasic {
   id: string;

@@ -24,7 +24,7 @@ import {
   Printer
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { supabase } from '@/lib/supabase';
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase';
 import LoadingScreen from './LoadingScreen';
 import jsPDF from 'jspdf';
 
@@ -482,15 +482,12 @@ export default function ReportsView() {
     return doc.output('datauristring').split(',')[1];
   };
 
-  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-  const SUPABASE_ANON = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
   const callSendReport = async (to: string[], subject: string, html: string, pdfBase64?: string, pdfFilename?: string): Promise<boolean> => {
     const res = await fetch(`${SUPABASE_URL}/functions/v1/send-report`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SUPABASE_ANON}`,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
       },
       body: JSON.stringify({ to, subject, html, pdfBase64, pdfFilename }),
     });

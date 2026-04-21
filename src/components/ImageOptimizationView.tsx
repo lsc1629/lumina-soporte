@@ -15,7 +15,7 @@ import {
   ArrowRight,
   ChevronLeft,
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase';
 import LoadingScreen from './LoadingScreen';
 
 interface ClientInfo {
@@ -139,14 +139,11 @@ export default function ImageOptimizationView() {
     setImages([]);
 
     try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-      const res = await fetch(`${supabaseUrl}/functions/v1/scan-images`, {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/scan-images`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${anonKey}`,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
         },
         body: JSON.stringify({ project_id: projectId }),
       });

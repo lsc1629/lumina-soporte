@@ -1,8 +1,6 @@
 import { useParams } from 'react-router-dom';
 import PublicStatusPage from '@/components/PublicStatusPage';
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+import { SUPABASE_URL as supabaseUrl, SUPABASE_ANON_KEY as supabaseAnonKey } from '@/lib/supabase';
 
 export default function StatusPageRoute() {
   const { slug } = useParams<{ slug: string }>();

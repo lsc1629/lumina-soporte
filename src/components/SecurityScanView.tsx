@@ -22,7 +22,7 @@ import {
   Server,
   Zap,
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase';
 import LoadingScreen from './LoadingScreen';
 
 type Severity = 'critical' | 'high' | 'medium' | 'low' | 'info' | 'pass';
@@ -201,16 +201,14 @@ export default function SecurityScanView() {
     setScanError(null);
 
     try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
       const { data: { session } } = await supabase.auth.getSession();
 
-      const res = await fetch(`${supabaseUrl}/functions/v1/security-scan`, {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/security-scan`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session?.access_token || anonKey}`,
-          'apikey': anonKey,
+          'Authorization': `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
+          'apikey': SUPABASE_ANON_KEY,
         },
         body: JSON.stringify({ projectId: selectedProject }),
       });

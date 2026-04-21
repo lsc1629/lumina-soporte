@@ -31,7 +31,7 @@ import {
   Activity,
   Bot
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase';
 
 interface NewProjectViewProps {
   onCancel: () => void;
@@ -487,16 +487,13 @@ export default function NewProjectView({ onCancel }: NewProjectViewProps) {
     if (!form.url.trim()) { setConnResult({ status: 'error', message: 'Ingresa la URL del sitio primero.' }); return; }
     setConnResult({ status: 'testing', message: 'Probando conexión...' });
 
-    const SUPA_URL = import.meta.env.VITE_SUPABASE_URL;
-    const SUPA_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
     try {
-      const res = await fetch(`${SUPA_URL}/functions/v1/test-connection`, {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/test-connection`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPA_KEY}`,
-          'apikey': SUPA_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'apikey': SUPABASE_ANON_KEY,
         },
         body: JSON.stringify({
           url: form.url,
@@ -585,15 +582,13 @@ export default function NewProjectView({ onCancel }: NewProjectViewProps) {
     }
 
     // Use save-project Edge Function to encrypt credentials before saving
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
     const { data: { session } } = await supabase.auth.getSession();
-    const saveRes = await fetch(`${supabaseUrl}/functions/v1/save-project`, {
+    const saveRes = await fetch(`${SUPABASE_URL}/functions/v1/save-project`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session?.access_token || anonKey}`,
-        'apikey': anonKey,
+        'Authorization': `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
+        'apikey': SUPABASE_ANON_KEY,
       },
       body: JSON.stringify({ data: projectData }),
     });

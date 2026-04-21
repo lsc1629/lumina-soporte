@@ -13,7 +13,7 @@ import {
   Loader2,
   Send
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase';
 import LoadingScreen from './LoadingScreen';
 
 interface IncidentData {
@@ -170,15 +170,13 @@ export default function IncidentDetailsView({ incidentId, onBack }: IncidentDeta
 
     // Notify admin + client via Edge Function (fire-and-forget)
     try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
       const { data: { session } } = await supabase.auth.getSession();
-      fetch(`${supabaseUrl}/functions/v1/notify-incident`, {
+      fetch(`${SUPABASE_URL}/functions/v1/notify-incident`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session?.access_token || anonKey}`,
-          'apikey': anonKey,
+          'Authorization': `Bearer ${session?.access_token || SUPABASE_ANON_KEY}`,
+          'apikey': SUPABASE_ANON_KEY,
         },
         body: JSON.stringify({ incidentId, newStatus, changedBy: user?.id }),
       });

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { supabase } from '@/lib/supabase';
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase';
 import LoadingScreen from '../LoadingScreen';
 import { Loader2, CheckCircle2, Link2, Unlink, ExternalLink, Activity, MessageSquare, Code2, Cloud, Mail, Key, Copy, Eye, EyeOff, Trash2, Plus, Bot, AlertTriangle } from 'lucide-react';
 
@@ -82,12 +82,12 @@ export default function IntegrationsSection() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
-      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-api-key`, {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/generate-api-key`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`,
-          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+          'apikey': SUPABASE_ANON_KEY,
         },
         body: JSON.stringify({ label: newKeyLabel || 'Default' }),
       });
