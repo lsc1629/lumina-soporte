@@ -1,0 +1,35 @@
+---
+const appUrl = 'https://soporte.luissalascortes.dev';
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-white/5 py-12">
+  <div class="section-padding">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2.5">
+        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary shadow-lg shadow-primary/20">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-white">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+            <path d="M2 17l10 5 10-5" />
+            <path d="M2 12l10 5 10-5" />
+          </svg>
+        </div>
+        <span class="font-display text-sm font-bold text-white">Lumina<span class="text-primary-light">Support</span></span>
+      </a>
+
+      <!-- Links -->
+      <div class="flex items-center gap-6 text-sm text-gray-500">
+        <a href="#features" class="hover:text-gray-300 transition-colors">Funcionalidades</a>
+        <a href="#pricing" class="hover:text-gray-300 transition-colors">Planes</a>
+        <a href="#faq" class="hover:text-gray-300 transition-colors">FAQ</a>
+        <a href={appUrl} class="hover:text-gray-300 transition-colors">Acceder</a>
+      </div>
+
+      <!-- Copyright -->
+      <p class="text-xs text-gray-600">
+        &copy; {year} LuminaSupport. Todos los derechos reservados.
+      </p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,16 @@
+{
+  "name": "lumina-soporte",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "app",
+    "landing"
+  ],
+  "scripts": {
+    "dev:app": "npm run dev -w app",
+    "dev:landing": "npm run dev -w landing",
+    "build:app": "npm run build -w app",
+    "build:landing": "npm run build -w landing",
+    "dev": "npm run dev:app"
+  }
+}
