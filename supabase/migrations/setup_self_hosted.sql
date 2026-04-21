@@ -50,14 +50,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION public.is_admin()
-RETURNS BOOLEAN AS $$
-  SELECT EXISTS (
-    SELECT 1 FROM public.profiles
-    WHERE id = auth.uid() AND role = 'admin'
-  );
-$$ LANGUAGE sql SECURITY DEFINER STABLE;
-
 -- ══════════════════════════════════════════════════════════════
 -- PARTE 3: TABLA PROFILES
 -- ══════════════════════════════════════════════════════════════
@@ -87,6 +79,15 @@ CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles(email);
 CREATE INDEX IF NOT EXISTS idx_profiles_company ON public.profiles(company_name);
 
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
+-- is_admin() definida aquí, después de CREATE TABLE profiles y antes de las políticas que la usan
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND role = 'admin'
+  );
+$$ LANGUAGE sql SECURITY DEFINER STABLE;
 
 DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
 CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
