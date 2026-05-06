@@ -634,7 +634,7 @@ function lumina_agent_update_plugin_callback( WP_REST_Request $request ) {
 	$plugin_file = $request->get_param( 'plugin' );
 
 	if ( ! file_exists( WP_PLUGIN_DIR . '/' . $plugin_file ) ) {
-		if ( ! str_ends_with( $plugin_file, '.php' ) && file_exists( WP_PLUGIN_DIR . '/' . $plugin_file . '.php' ) ) {
+		if ( substr( $plugin_file, -4 ) !== '.php' && file_exists( WP_PLUGIN_DIR . '/' . $plugin_file . '.php' ) ) {
 			$plugin_file .= '.php';
 		} else {
 			return new WP_REST_Response( array( 'success' => false, 'error' => 'Plugin not found: ' . $plugin_file ), 404 );
