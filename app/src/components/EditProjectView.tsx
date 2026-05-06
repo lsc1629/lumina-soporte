@@ -5,10 +5,8 @@ import {
   Save,
   Loader2,
   Globe,
-  Key,
   Activity,
   Trash2,
-  AlertTriangle,
   Bot,
   CheckCircle2,
   Copy,
@@ -40,9 +38,6 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
     url: '',
     platform: '',
     hosting_provider: '',
-    admin_url: '',
-    admin_user: '',
-    admin_password: '',
     site_token: '',
     notes: '',
     frontend_url: '',
@@ -53,8 +48,7 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
     monitoring_interval_minutes: '5',
     log_retention_days: '90',
   });
-  const [originalPasswords, setOriginalPasswords] = useState({ admin_password: '' });
-
+  
   useEffect(() => {
     if (projectId) loadProject();
   }, [projectId]);
@@ -73,17 +67,11 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
       return;
     }
 
-    setOriginalPasswords({
-      admin_password: data.admin_password_encrypted || '',
-    });
     setForm({
       name: data.name || '',
       url: data.url || '',
       platform: data.platform || '',
       hosting_provider: data.hosting_provider || '',
-      admin_url: data.admin_url || '',
-      admin_user: data.admin_user || '',
-      admin_password: '',
       site_token: data.site_token || '',
       notes: data.notes || '',
       frontend_url: data.frontend_url || '',
@@ -113,9 +101,6 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
       url: cleanUrl,
       platform: form.platform,
       hosting_provider: form.hosting_provider,
-      admin_url: form.admin_url,
-      admin_user: form.admin_user,
-      admin_password: form.admin_password.trim() || originalPasswords.admin_password,
       notes: form.notes,
       frontend_url: form.frontend_url,
       frontend_provider: form.frontend_provider,
@@ -243,36 +228,6 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
           <div className="space-y-2">
             <label className="text-sm font-medium text-text-muted">Notas</label>
             <textarea value={form.notes} onChange={e => update('notes', e.target.value)} rows={2} className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary transition-all resize-none" />
-          </div>
-        </div>
-
-        {/* Credentials */}
-        <div className="space-y-6 border-t border-border pt-6">
-          <h2 className="font-display text-xl font-semibold text-white flex items-center gap-2">
-            <Key size={20} className="text-secondary" />
-            Credenciales
-          </h2>
-
-          {/* Notas de acceso (referencia manual — no usadas para auth automática) */}
-          <div className="rounded-xl border border-border/50 bg-surface/50 p-4 space-y-1">
-            <div className="flex items-center gap-2 mb-3">
-              <AlertTriangle size={14} className="text-text-muted shrink-0" />
-              <p className="text-xs text-text-muted">Estas credenciales son solo de referencia. Toda la comunicación automática se realiza a través del plugin Lumina Agent (abajo).</p>
-            </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-text-muted">URL Admin</label>
-                <input type="text" value={form.admin_url} onChange={e => update('admin_url', e.target.value)} placeholder="https://ejemplo.com/wp-admin" className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary transition-all" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-text-muted">Usuario (referencia)</label>
-                <input type="text" value={form.admin_user} onChange={e => update('admin_user', e.target.value)} placeholder="admin" className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary transition-all" />
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <label className="text-sm font-medium text-text-muted">Contraseña (referencia)</label>
-                <input type="password" value={form.admin_password} onChange={e => update('admin_password', e.target.value)} placeholder={originalPasswords.admin_password ? '(sin cambios — dejar vacío para mantener)' : 'contraseña de acceso manual'} className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary transition-all" />
-              </div>
-            </div>
           </div>
         </div>
 
