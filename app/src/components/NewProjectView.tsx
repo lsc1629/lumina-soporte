@@ -389,6 +389,7 @@ export default function NewProjectView({ onCancel }: NewProjectViewProps) {
     const { data } = await supabase
       .from('profiles')
       .select('id, full_name, email, phone, company_name, role')
+      .neq('role', 'admin')
       .order('full_name');
     if (data) setClients(data);
     setLoadingClients(false);
