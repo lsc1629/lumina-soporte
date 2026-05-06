@@ -1,12 +1,12 @@
 import { motion } from 'motion/react';
-import { Package, Download, Plug, FileText, ExternalLink, Bot, Key } from 'lucide-react';
+import { Download, FileText, Bot } from 'lucide-react';
 
 const resources = [
   {
     id: 'lumina-agent',
     name: 'Lumina Agent',
     description: 'Plugin de WordPress que conecta tu sitio con LuminaSupport usando una API Key. Permite monitoreo, actualizaciones remotas de plugins/temas/core y registro automático del sitio. Solo necesitas pegar tu API Key.',
-    version: '3.0.0',
+    version: '3.1.0',
     icon: Bot,
     file: '/lumina-agent.zip',
     instructions: [
@@ -15,20 +15,6 @@ const resources = [
       'En WordPress: Plugins → Añadir nuevo → Subir plugin → sube el .zip',
       'Activa el plugin y ve a WP Admin → Ajustes → Lumina Agent',
       'Pega tu API Key y guarda — el sitio se conectará automáticamente',
-    ],
-  },
-  {
-    id: 'lumina-updater-legacy',
-    name: 'Lumina Updater (Legacy)',
-    description: 'Versión anterior del plugin que usa Application Passwords. Si ya lo tienes instalado, sigue funcionando. Para nuevas instalaciones, usa Lumina Agent v3.',
-    version: '2.0.0',
-    icon: Plug,
-    file: '/lumina-updater.zip',
-    instructions: [
-      'Descarga el archivo .zip',
-      'En WordPress: Plugins → Añadir nuevo → Subir plugin',
-      'Sube el .zip, instala y activa',
-      'Configura la URL de Lumina y el Token del proyecto en Herramientas → Lumina Agent',
     ],
   },
 ];
