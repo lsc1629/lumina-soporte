@@ -27,10 +27,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'LUMINA_AGENT_VERSION', '3.1.0' );
-define( 'LUMINA_AGENT_OPT', 'lumina_agent_' );
-// URL base de la API de Lumina (Supabase Edge Functions)
-define( 'LUMINA_API_BASE', 'https://bd.luissalascortes.dev/functions/v1' );
+if ( ! defined( 'LUMINA_AGENT_VERSION' ) ) define( 'LUMINA_AGENT_VERSION', '3.1.0' );
+if ( ! defined( 'LUMINA_AGENT_OPT' ) )     define( 'LUMINA_AGENT_OPT', 'lumina_agent_' );
+if ( ! defined( 'LUMINA_API_BASE' ) )      define( 'LUMINA_API_BASE', 'https://bd.luissalascortes.dev/functions/v1' );
 
 /* ================================================================
    PRESERVAR OPCIONES DURANTE ACTUALIZACIONES DEL PLUGIN
@@ -39,9 +38,10 @@ define( 'LUMINA_API_BASE', 'https://bd.luissalascortes.dev/functions/v1' );
    Este hook respalda y restaura las opciones críticas.
    ================================================================ */
 
+if ( ! function_exists( 'lumina_agent_backup_on_upgrade' ) ) {
 add_action( 'upgrader_process_complete', 'lumina_agent_backup_on_upgrade', 10, 2 );
 
-function lumina_agent_backup_on_upgrade( $upgrader, $options ) {
+function lumina_agent_backup_on_upgrade( $upgrader, $options ) { // phpcs:ignore
 	if (
 		empty( $options['action'] ) ||
 		$options['action'] !== 'update' ||
@@ -74,6 +74,9 @@ function lumina_agent_backup_on_upgrade( $upgrader, $options ) {
    RESPALDO PREVENTIVO — Se ejecuta antes de cualquier actualización
    ================================================================ */
 
+} // end if lumina_agent_backup_on_upgrade
+
+if ( ! function_exists( 'lumina_agent_pre_upgrade_backup' ) ) {
 add_action( 'upgrader_pre_install', 'lumina_agent_pre_upgrade_backup', 10, 2 );
 
 function lumina_agent_pre_upgrade_backup( $response, $hook_extra ) {
@@ -109,6 +112,9 @@ function lumina_agent_pre_upgrade_backup( $response, $hook_extra ) {
    ADMIN MENU — Settings bajo Ajustes
    ================================================================ */
 
+} // end if lumina_agent_pre_upgrade_backup
+
+if ( ! function_exists( 'lumina_agent_admin_menu' ) ) {
 add_action( 'admin_menu', 'lumina_agent_admin_menu' );
 
 function lumina_agent_admin_menu() {
@@ -121,6 +127,9 @@ function lumina_agent_admin_menu() {
 	);
 }
 
+} // end if lumina_agent_admin_menu
+
+if ( ! function_exists( 'lumina_agent_register_settings' ) ) {
 add_action( 'admin_init', 'lumina_agent_register_settings' );
 
 function lumina_agent_register_settings() {
@@ -365,6 +374,9 @@ function lumina_agent_settings_page() {
    REST API — Autenticación via X-Lumina-Token header
    ================================================================ */
 
+} // end if lumina_agent_register_settings
+
+if ( ! function_exists( 'lumina_agent_register_routes' ) ) {
 add_action( 'rest_api_init', 'lumina_agent_register_routes' );
 
 function lumina_agent_register_routes() {
@@ -867,6 +879,9 @@ function lumina_agent_install_plugin_callback( WP_REST_Request $request ) {
    ADMIN BAR — Indicador visual de estado
    ================================================================ */
 
+} // end if lumina_agent_register_routes
+
+if ( ! function_exists( 'lumina_agent_admin_bar' ) ) {
 add_action( 'admin_bar_menu', 'lumina_agent_admin_bar', 100 );
 
 function lumina_agent_admin_bar( $wp_admin_bar ) {
@@ -882,3 +897,4 @@ function lumina_agent_admin_bar( $wp_admin_bar ) {
 		'href'  => admin_url( 'options-general.php?page=lumina-agent' ),
 	) );
 }
+} // end if lumina_agent_admin_bar
