@@ -406,74 +406,34 @@ export default function NewProjectView({ onCancel }: NewProjectViewProps) {
     setCreatingClient(true);
     setError('');
 
-    // Check if profile already exists
-    const { data: existingProfile } = await supabase
-      .from('profiles')
-      .select('id, full_name, email, phone, company_name, role')
-      .eq('email', newClient.email.trim())
-      .single();
-
-    if (existingProfile) {
-      await supabase.from('profiles').update({
-        full_name: newClient.full_name.trim(),
-        phone: newClient.phone,
-        company_name: newClient.company_name,
-      }).eq('id', existingProfile.id);
-
-      const updated: ClientProfile = {
-        id: existingProfile.id,
+    // Usar Edge Function para crear el usuario sin afectar la sesión del admin
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/create-client`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+      body: JSON.stringify({
         full_name: newClient.full_name.trim(),
         email: newClient.email.trim(),
         phone: newClient.phone,
         company_name: newClient.company_name,
-        role: existingProfile.role,
-      };
-      setSelectedClient(updated);
-      setClients(prev => [...prev.filter(c => c.id !== existingProfile.id), updated]);
-      setShowNewClient(false);
-      setNewClient({ full_name: '', email: '', phone: '', company_name: '' });
-      setCreatingClient(false);
-      return;
-    }
-
-    // Create new user via signUp (works with anon key)
-    const tempPassword = crypto.randomUUID().slice(0, 16);
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email: newClient.email.trim(),
-      password: tempPassword,
-      options: {
-        data: { full_name: newClient.full_name.trim(), role: 'client' },
-      },
+      }),
     });
 
-    if (signUpError) {
-      setError(`No se pudo crear el cliente: ${signUpError.message}`);
+    const result = await res.json();
+
+    if (!res.ok) {
+      setError(`No se pudo crear el cliente: ${result.error || res.statusText}`);
       setCreatingClient(false);
       return;
     }
 
-    if (data?.user) {
-      // Wait briefly for the profile trigger to create the profile
-      await new Promise(r => setTimeout(r, 1000));
-
-      await supabase.from('profiles').update({
-        phone: newClient.phone,
-        company_name: newClient.company_name,
-      }).eq('id', data.user.id);
-
-      const created: ClientProfile = {
-        id: data.user.id,
-        full_name: newClient.full_name.trim(),
-        email: newClient.email.trim(),
-        phone: newClient.phone,
-        company_name: newClient.company_name,
-        role: 'client',
-      };
-      setSelectedClient(created);
-      setClients(prev => [...prev, created]);
-      setShowNewClient(false);
-      setNewClient({ full_name: '', email: '', phone: '', company_name: '' });
-    }
+    const created: ClientProfile = result;
+    setSelectedClient(created);
+    setClients(prev => [...prev.filter(c => c.id !== created.id), created]);
+    setShowNewClient(false);
+    setNewClient({ full_name: '', email: '', phone: '', company_name: '' });
     setCreatingClient(false);
   };
 
