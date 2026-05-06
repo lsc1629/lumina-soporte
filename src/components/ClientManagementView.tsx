@@ -27,6 +27,9 @@ import {
   UserPlus,
   Eye,
   EyeOff,
+  Key,
+  Copy,
+  Loader2,
 } from 'lucide-react';
 import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase';
 
