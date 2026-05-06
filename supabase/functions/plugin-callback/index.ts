@@ -1,4 +1,8 @@
 // supabase/functions/plugin-callback/index.ts
+// DEPRECATED — Esta función era del flujo v2 (Lumina Agent enviaba wp_app_user/wp_app_password).
+// Desde v3 el plugin usa site_token (X-Lumina-Token) y el registro pasa por register-site.
+// Se mantiene como stub para no romper agentes legacy que puedan llamarla.
+
 // Edge Function — recibe el webhook del plugin Lumina Agent cuando se auto-configura.
 // Guarda wp_app_user y wp_app_password_encrypted en la tabla projects.
 

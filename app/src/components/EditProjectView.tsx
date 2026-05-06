@@ -43,8 +43,6 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
     admin_url: '',
     admin_user: '',
     admin_password: '',
-    wp_app_user: '',
-    wp_app_password: '',
     site_token: '',
     notes: '',
     frontend_url: '',
@@ -55,7 +53,7 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
     monitoring_interval_minutes: '5',
     log_retention_days: '90',
   });
-  const [originalPasswords, setOriginalPasswords] = useState({ admin_password: '', wp_app_password: '' });
+  const [originalPasswords, setOriginalPasswords] = useState({ admin_password: '' });
 
   useEffect(() => {
     if (projectId) loadProject();
@@ -77,7 +75,6 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
 
     setOriginalPasswords({
       admin_password: data.admin_password_encrypted || '',
-      wp_app_password: data.wp_app_password_encrypted || '',
     });
     setForm({
       name: data.name || '',
@@ -87,8 +84,6 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
       admin_url: data.admin_url || '',
       admin_user: data.admin_user || '',
       admin_password: '',
-      wp_app_user: data.wp_app_user || '',
-      wp_app_password: '',
       site_token: data.site_token || '',
       notes: data.notes || '',
       frontend_url: data.frontend_url || '',
@@ -121,8 +116,6 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
       admin_url: form.admin_url,
       admin_user: form.admin_user,
       admin_password: form.admin_password.trim() || originalPasswords.admin_password,
-      wp_app_user: form.wp_app_user,
-      wp_app_password: form.wp_app_password.trim() || originalPasswords.wp_app_password,
       notes: form.notes,
       frontend_url: form.frontend_url,
       frontend_provider: form.frontend_provider,
@@ -260,86 +253,27 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
             Credenciales
           </h2>
 
-          {/* Detect credential type: WooCommerce (ck_) vs WordPress vs other */}
-          {(() => {
-            const isWoo = ['wordpress', 'headless'].includes(form.platform) && form.admin_user.startsWith('ck_');
-            const isWpPure = ['wordpress', 'headless'].includes(form.platform) && !isWoo;
-            const hasAgent = !!form.wp_app_user;
-
-            return (
-              <>
-                {/* WooCommerce info banner */}
-                {isWoo && (
-                  <div className="rounded-xl border border-purple-500/30 bg-purple-500/10 p-4 space-y-2">
-                    <div className="flex items-center gap-3">
-                      <AlertTriangle size={18} className="text-purple-400 shrink-0" />
-                      <h4 className="text-sm font-bold text-purple-400">Proyecto WooCommerce — Consumer Key / Secret</h4>
-                    </div>
-                    <p className="text-xs text-text-muted">Se usan las claves de WooCommerce REST API para sincronizar plugins. Si necesitas regenerarlas: <strong className="text-white">WooCommerce → Ajustes → Avanzado → REST API</strong>.</p>
-                  </div>
-                )}
-
-                {isWoo && (
-                  <div className="rounded-xl border-2 border-warning/40 bg-warning/10 p-5 space-y-3">
-                    <div className="flex items-center gap-3">
-                      <Key size={20} className="text-warning shrink-0" />
-                      <h4 className="text-sm font-bold text-warning">Application Password — Requerido para actualizar plugins</h4>
-                    </div>
-                    <p className="text-sm text-white/80">
-                      Para actualizar plugins/core remotamente se necesita una <strong className="text-white">Contraseña de Aplicación de WordPress</strong> (diferente a la Consumer Key de WooCommerce).
-                    </p>
-                    <p className="text-xs text-warning/70">Ve a: <strong className="text-white">WordPress → Usuarios → Tu Perfil → Contraseñas de aplicación</strong> y genera una nueva.</p>
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 mt-3">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-text-muted">Usuario WordPress</label>
-                        <input type="text" value={form.wp_app_user} onChange={e => update('wp_app_user', e.target.value)} placeholder="admin" className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary transition-all" />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-text-muted">Contraseña de Aplicación</label>
-                        <input type="password" value={form.wp_app_password} onChange={e => update('wp_app_password', e.target.value)} placeholder={originalPasswords.wp_app_password ? '(sin cambios — dejar vacío para mantener)' : 'aBcD eFgH iJkL mNoP qRsT uVwX'} className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary transition-all" />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* WordPress Application Password warning */}
-                {isWpPure && (
-                  <div className="rounded-xl border-2 border-warning/40 bg-warning/10 p-5 space-y-3">
-                    <div className="flex items-center gap-3">
-                      <AlertTriangle size={20} className="text-warning shrink-0" />
-                      <h4 className="text-sm font-bold text-warning">IMPORTANTE: Se requiere Contraseña de Aplicación</h4>
-                    </div>
-                    <p className="text-sm text-white/80">
-                      WordPress <strong className="text-white">NO permite usar tu contraseña normal</strong> para la REST API.
-                      Genera una en: <strong className="text-white">WordPress → Usuarios → Tu Perfil → Contraseñas de aplicación</strong>.
-                    </p>
-                    <p className="text-xs text-warning/70 italic">Formato: <code className="text-primary bg-surface px-1.5 py-0.5 rounded text-xs">aBcD eFgH iJkL mNoP qRsT uVwX</code></p>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-text-muted">
-                      {isWoo ? 'URL del Sitio' : isWpPure ? 'URL Admin (wp-admin)' : 'Admin URL'}
-                    </label>
-                    <input type="text" value={form.admin_url} onChange={e => update('admin_url', e.target.value)} placeholder={isWoo ? 'https://ejemplo.com' : isWpPure ? 'https://ejemplo.com/wp-admin' : ''} className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary transition-all" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-text-muted">
-                      {isWoo ? 'Consumer Key (ck_...)' : isWpPure ? 'Usuario WordPress' : 'Usuario / API Key'}
-                    </label>
-                    <input type="text" value={form.admin_user} onChange={e => update('admin_user', e.target.value)} placeholder={isWoo ? 'ck_xxxxxxxxxxxxxxxx' : ''} className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary transition-all" />
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <label className="text-sm font-medium text-text-muted">
-                      {isWoo ? 'Consumer Secret (cs_...)' : isWpPure ? 'Contraseña de Aplicación (NO la contraseña normal)' : 'Contraseña / Secret'}
-                    </label>
-                    <input type="password" value={form.admin_password} onChange={e => update('admin_password', e.target.value)} placeholder={originalPasswords.admin_password ? '(sin cambios — dejar vacío para mantener)' : isWoo ? 'cs_xxxxxxxxxxxxxxxx' : isWpPure ? 'aBcD eFgH iJkL mNoP qRsT uVwX' : ''} className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary transition-all" />
-                  </div>
-                </div>
-              </>
-            );
-          })()}
+          {/* Notas de acceso (referencia manual — no usadas para auth automática) */}
+          <div className="rounded-xl border border-border/50 bg-surface/50 p-4 space-y-1">
+            <div className="flex items-center gap-2 mb-3">
+              <AlertTriangle size={14} className="text-text-muted shrink-0" />
+              <p className="text-xs text-text-muted">Estas credenciales son solo de referencia. Toda la comunicación automática se realiza a través del plugin Lumina Agent (abajo).</p>
+            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-text-muted">URL Admin</label>
+                <input type="text" value={form.admin_url} onChange={e => update('admin_url', e.target.value)} placeholder="https://ejemplo.com/wp-admin" className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary transition-all" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-text-muted">Usuario (referencia)</label>
+                <input type="text" value={form.admin_user} onChange={e => update('admin_user', e.target.value)} placeholder="admin" className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary transition-all" />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-sm font-medium text-text-muted">Contraseña (referencia)</label>
+                <input type="password" value={form.admin_password} onChange={e => update('admin_password', e.target.value)} placeholder={originalPasswords.admin_password ? '(sin cambios — dejar vacío para mantener)' : 'contraseña de acceso manual'} className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary transition-all" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Frontend (headless) */}
@@ -420,8 +354,8 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
               Lumina Agent
             </h2>
 
-            {/* Status: Connected (site_token v3 or wp_app_user v2) or Not */}
-            {(form.site_token || form.wp_app_user) ? (
+            {/* Status: Connected (site_token v3) or Not */}
+            {form.site_token ? (
               <div className="rounded-xl border border-success/30 bg-success/10 p-4 flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-success/20">
                   <Wifi size={20} className="text-success" />
@@ -431,12 +365,7 @@ export default function EditProjectView({ projectId, onCancel }: EditProjectView
                     <h4 className="text-sm font-bold text-success">Agent Conectado</h4>
                     <CheckCircle2 size={14} className="text-success" />
                   </div>
-                  <p className="text-xs text-text-muted mt-0.5">
-                    {form.site_token
-                      ? 'Conectado vía API Key — el sitio se registró automáticamente.'
-                      : <>Usuario legacy: <code className="text-primary bg-surface px-1 rounded text-[11px]">{form.wp_app_user}</code></>
-                    }
-                  </p>
+                  <p className="text-xs text-text-muted mt-0.5">Conectado vía API Key — el sitio se registró automáticamente.</p>
                 </div>
                 <button
                   onClick={handleTestConnection}

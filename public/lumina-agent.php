@@ -3,7 +3,7 @@
  * Plugin Name: Lumina Agent
  * Plugin URI:  https://lumina.app
  * Description: Conecta tu sitio WordPress con Lumina — monitoreo, actualizaciones y gestión remota con una sola API Key.
- * Version: 3.0.1
+ * Version: 3.1.0
  * Author: Lumina
  * Requires at least: 5.6
  * Requires PHP: 7.4
@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'LUMINA_AGENT_VERSION', '3.0.1' );
+define( 'LUMINA_AGENT_VERSION', '3.1.0' );
 define( 'LUMINA_AGENT_OPT', 'lumina_agent_' );
 // URL base de la API de Lumina (Supabase Edge Functions)
 define( 'LUMINA_API_BASE', 'https://bd.luissalascortes.dev/functions/v1' );
@@ -419,6 +419,34 @@ function lumina_agent_register_routes() {
 		'permission_callback' => 'lumina_agent_verify_token',
 	) );
 
+	register_rest_route( 'lumina/v1', '/toggle-auto-update', array(
+		'methods'             => 'POST',
+		'callback'            => 'lumina_agent_toggle_auto_update_callback',
+		'permission_callback' => 'lumina_agent_verify_token',
+		'args' => array(
+			'plugin_file' => array( 'required' => true, 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ),
+			'enable'      => array( 'required' => true, 'type' => 'boolean' ),
+		),
+	) );
+
+	register_rest_route( 'lumina/v1', '/delete-plugin', array(
+		'methods'             => 'POST',
+		'callback'            => 'lumina_agent_delete_plugin_callback',
+		'permission_callback' => 'lumina_agent_verify_token',
+		'args' => array(
+			'plugin_file' => array( 'required' => true, 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ),
+		),
+	) );
+
+	register_rest_route( 'lumina/v1', '/install-plugin', array(
+		'methods'             => 'POST',
+		'callback'            => 'lumina_agent_install_plugin_callback',
+		'permission_callback' => 'lumina_agent_verify_token',
+		'args' => array(
+			'slug' => array( 'required' => true, 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ),
+		),
+	) );
+
 	// Heartbeat — Lumina puede hacer ping para verificar que el agent sigue activo
 	register_rest_route( 'lumina/v1', '/heartbeat', array(
 		'methods'             => 'GET',
@@ -723,6 +751,116 @@ function lumina_agent_update_core_callback( WP_REST_Request $request ) {
 
 	global $wp_version;
 	return new WP_REST_Response( array( 'success' => true, 'new_version' => $result ?? $wp_version ), 200 );
+}
+
+/* ================================================================
+   POST /lumina/v1/toggle-auto-update
+   ================================================================ */
+
+function lumina_agent_toggle_auto_update_callback( WP_REST_Request $request ) {
+	$plugin_file = $request->get_param( 'plugin_file' );
+	$enable      = (bool) $request->get_param( 'enable' );
+
+	require_once ABSPATH . 'wp-admin/includes/plugin.php';
+
+	$auto_updates = (array) get_option( 'auto_update_plugins', array() );
+
+	if ( $enable ) {
+		if ( ! in_array( $plugin_file, $auto_updates, true ) ) {
+			$auto_updates[] = $plugin_file;
+		}
+	} else {
+		$auto_updates = array_values( array_diff( $auto_updates, array( $plugin_file ) ) );
+	}
+
+	update_option( 'auto_update_plugins', $auto_updates );
+
+	return new WP_REST_Response( array(
+		'success'     => true,
+		'plugin_file' => $plugin_file,
+		'auto_update' => $enable,
+	), 200 );
+}
+
+/* ================================================================
+   POST /lumina/v1/delete-plugin
+   ================================================================ */
+
+function lumina_agent_delete_plugin_callback( WP_REST_Request $request ) {
+	$plugin_file = $request->get_param( 'plugin_file' );
+
+	require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+
+	// Cannot delete self
+	if ( plugin_basename( __FILE__ ) === $plugin_file ) {
+		return new WP_REST_Response( array( 'success' => false, 'error' => 'No se puede eliminar el Lumina Agent.' ), 403 );
+	}
+
+	if ( ! file_exists( WP_PLUGIN_DIR . '/' . $plugin_file ) ) {
+		return new WP_REST_Response( array( 'success' => false, 'error' => 'Plugin no encontrado: ' . $plugin_file ), 404 );
+	}
+
+	// Deactivate first if active
+	if ( is_plugin_active( $plugin_file ) ) {
+		deactivate_plugins( $plugin_file );
+	}
+
+	$deleted = delete_plugins( array( $plugin_file ) );
+
+	if ( is_wp_error( $deleted ) ) {
+		return new WP_REST_Response( array( 'success' => false, 'error' => $deleted->get_error_message() ), 500 );
+	}
+
+	return new WP_REST_Response( array( 'success' => true, 'plugin_file' => $plugin_file ), 200 );
+}
+
+/* ================================================================
+   POST /lumina/v1/install-plugin
+   ================================================================ */
+
+function lumina_agent_install_plugin_callback( WP_REST_Request $request ) {
+	$slug = $request->get_param( 'slug' );
+
+	require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+	require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+	require_once ABSPATH . 'wp-admin/includes/misc.php';
+	require_once ABSPATH . 'wp-admin/includes/plugin.php';
+
+	$api = plugins_api( 'plugin_information', array(
+		'slug'   => $slug,
+		'fields' => array( 'sections' => false, 'reviews' => false ),
+	) );
+
+	if ( is_wp_error( $api ) ) {
+		return new WP_REST_Response( array( 'success' => false, 'error' => 'Plugin no encontrado en wordpress.org: ' . $api->get_error_message() ), 404 );
+	}
+
+	$skin     = new Automatic_Upgrader_Skin();
+	$upgrader = new Plugin_Upgrader( $skin );
+	$result   = $upgrader->install( $api->download_link );
+
+	if ( is_wp_error( $result ) ) {
+		return new WP_REST_Response( array( 'success' => false, 'error' => $result->get_error_message() ), 500 );
+	}
+	if ( $result === false ) {
+		return new WP_REST_Response( array( 'success' => false, 'error' => 'La instalación falló.' ), 500 );
+	}
+
+	// Find the plugin file and activate it
+	$plugin_file = $slug . '/' . $slug . '.php';
+	if ( file_exists( WP_PLUGIN_DIR . '/' . $plugin_file ) ) {
+		activate_plugin( $plugin_file );
+	}
+
+	return new WP_REST_Response( array(
+		'success'     => true,
+		'slug'        => $slug,
+		'name'        => $api->name ?? $slug,
+		'version'     => $api->version ?? '',
+		'plugin_file' => $plugin_file,
+	), 200 );
 }
 
 /* ================================================================

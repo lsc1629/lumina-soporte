@@ -29,7 +29,6 @@ interface Project {
   hosting_provider: string;
   created_at: string;
   update_count?: number;
-  wp_app_user?: string;
   site_token?: string;
 }
 
@@ -197,7 +196,7 @@ export default function ProjectsView({ onNewProject, onEditProject }: ProjectsVi
 
               <div className="mt-4 flex items-center gap-2 flex-wrap">
                 <span className="rounded-md bg-surface-hover px-2 py-1 text-xs font-medium text-text-muted border border-border capitalize">{project.platform}</span>
-                {(project.site_token || project.wp_app_user) && (
+                {project.site_token && (
                   <span className="flex items-center gap-1 rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary border border-primary/20">
                     <Bot size={12} /> Agent
                   </span>

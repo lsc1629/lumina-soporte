@@ -343,7 +343,7 @@ export default function UpdatesView() {
       const result = await callUpdatePlugin(selectedProject.id, plugin.slug, updateType, plugin.plugin_file || undefined);
 
       if (result.needs_mu_plugin) {
-        setSyncError('⚠️ Instala el plugin Lumina Updater en WordPress para habilitar actualizaciones remotas. Descárgalo desde el banner azul.');
+        setSyncError('El plugin Lumina Agent no está instalado o activo en este sitio. Instálalo desde WordPress → Ajustes → Lumina Agent.');
         return;
       }
 
@@ -454,7 +454,7 @@ export default function UpdatesView() {
     try {
       const result = await callUpdatePlugin(selectedProject.id, 'wordpress-core', 'core');
       if (result.needs_mu_plugin) {
-        setSyncError('⚠️ Instala el plugin Lumina Updater en WordPress para actualizar el core remotamente.');
+        setSyncError('El plugin Lumina Agent no está instalado o activo. Instálalo desde WordPress → Ajustes → Lumina Agent.');
       } else if (!result.success) {
         setSyncError(`Error al actualizar WordPress Core: ${result.error}`);
       } else {
@@ -760,26 +760,6 @@ export default function UpdatesView() {
               )}
             </div>
 
-            {/* Lumina Updater mu-plugin download banner */}
-            {selectedProject && ['wordpress', 'headless'].includes(selectedProject.platform) && (
-              <div className="flex items-center gap-3 rounded-xl border border-blue-500/20 bg-blue-500/5 px-4 py-3">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400">
-                  <Download size={16} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-white font-medium">Lumina Updater</p>
-                  <p className="text-xs text-text-muted">Instala este plugin en WordPress (<b>Plugins → Añadir nuevo → Subir plugin</b>) para habilitar actualizaciones remotas.</p>
-                </div>
-                <a
-                  href="/lumina-updater.zip"
-                  download="lumina-updater.zip"
-                  className="flex shrink-0 items-center gap-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 px-3 py-1.5 text-xs font-medium text-blue-400 hover:bg-blue-500/20 transition-colors"
-                >
-                  <Download size={12} />
-                  Descargar .zip
-                </a>
-              </div>
-            )}
 
             {/* Summary Cards */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

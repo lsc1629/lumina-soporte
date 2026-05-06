@@ -3,7 +3,6 @@
 // Usa site_token con header X-Lumina-Token (nuevo) o Basic Auth legacy como fallback.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { decrypt } from '../_shared/crypto.ts';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -13,14 +12,6 @@ const cors = {
 
 function ok(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: cors });
-}
-
-function encodeBasic(user: string, pass: string): string {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(`${user}:${pass}`);
-  let binary = '';
-  for (const byte of data) binary += String.fromCharCode(byte);
-  return btoa(binary);
 }
 
 Deno.serve(async (req) => {
@@ -39,7 +30,7 @@ Deno.serve(async (req) => {
 
     const { data: project, error: pErr } = await sb
       .from('projects')
-      .select('id, name, url, admin_url, platform, site_token, wp_app_user, wp_app_password_encrypted, admin_user, admin_password_encrypted')
+      .select('id, name, url, admin_url, platform, site_token')
       .eq('id', projectId)
       .single();
 
@@ -50,40 +41,19 @@ Deno.serve(async (req) => {
     let base = (project.admin_url || project.url || '').replace(/\/wp-admin\/?$/, '').replace(/\/+$/, '');
     if (!base.startsWith('http')) base = `https://${base}`;
 
-    // Build auth headers — prefer site_token (v3), fallback to Basic Auth (v2 legacy)
-    const headers: Record<string, string> = { 'Accept': 'application/json' };
-    let authMethod = 'none';
-
-    if (project.site_token) {
-      headers['X-Lumina-Token'] = project.site_token;
-      authMethod = 'site_token';
-    } else {
-      // Legacy fallback: wp_app_user or admin_user with Basic Auth
-      let authUser = project.wp_app_user || '';
-      let authPass = project.wp_app_password_encrypted || '';
-      if (authPass) {
-        try { authPass = await decrypt(authPass); } catch { /* use raw */ }
-      }
-      if (!authUser && project.admin_user && !project.admin_user.startsWith('ck_')) {
-        authUser = project.admin_user;
-        authPass = project.admin_password_encrypted || '';
-        if (authPass) {
-          try { authPass = await decrypt(authPass); } catch { /* use raw */ }
-        }
-      }
-      if (authUser && authPass) {
-        headers['Authorization'] = `Basic ${encodeBasic(authUser, authPass)}`;
-        authMethod = 'basic_auth';
-      }
-    }
-
-    if (authMethod === 'none') {
+    if (!project.site_token) {
       return ok({
         success: false,
         connected: false,
-        error: 'No hay credenciales configuradas. Instala el plugin Lumina Agent en WordPress y pega tu API Key.',
+        error: 'El plugin Lumina Agent no está conectado. Instálalo en WordPress y pega tu API Key desde el panel.',
       });
     }
+
+    const headers: Record<string, string> = {
+      'Accept': 'application/json',
+      'X-Lumina-Token': project.site_token,
+    };
+    const authMethod = 'site_token';
 
     // Test /lumina/v1/status
     const ctrl = new AbortController();
@@ -108,9 +78,7 @@ Deno.serve(async (req) => {
       } else if (res.status === 404) {
         errorMsg = 'El endpoint /lumina/v1/status no existe. Verifica que el plugin Lumina Agent esté instalado y activado.';
       } else if (res.status === 401 || res.status === 403) {
-        errorMsg = authMethod === 'site_token'
-          ? 'Token inválido. El site_token no coincide con el del plugin. Reconecta el sitio desde WP Admin → Ajustes → Lumina Agent.'
-          : 'Credenciales inválidas o permisos insuficientes.';
+        errorMsg = 'Token inválido. El site_token no coincide. Reconecta el sitio desde WP Admin → Ajustes → Lumina Agent.';
       } else {
         const text = await res.text();
         errorMsg = `HTTP ${res.status}: ${text.substring(0, 200)}`;

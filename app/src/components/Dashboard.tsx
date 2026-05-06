@@ -71,7 +71,7 @@ export default function Dashboard() {
       supabase.from('project_plugins').select('id, current_version, latest_version'),
       supabase.from('incidents').select('id, title, status, started_at, project:projects(name)').in('status', ['investigating', 'identified', 'monitoring']).order('started_at', { ascending: false }).limit(5),
       supabase.from('project_updates').select('id, name, status, applied_at, created_at, project:projects(name)').eq('status', 'completed').order('applied_at', { ascending: false }).limit(3),
-      supabase.from('projects').select('id', { count: 'exact', head: true }).eq('is_active', true).or('wp_app_user.neq.,site_token.neq.'),
+      supabase.from('projects').select('id', { count: 'exact', head: true }).eq('is_active', true).not('site_token', 'is', null),
     ]);
     const agentCount = agentRes.count || 0;
 
