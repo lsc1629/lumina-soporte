@@ -486,11 +486,17 @@ export default function ReportsView() {
   const SUPABASE_ANON = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
   const callSendReport = async (to: string[], subject: string, html: string, pdfBase64?: string, pdfFilename?: string): Promise<boolean> => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) {
+      console.error('[callSendReport] No hay sesión activa');
+      return false;
+    }
     const res = await fetch(`${SUPABASE_URL}/functions/v1/send-report`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SUPABASE_ANON}`,
+        'Authorization': `Bearer ${session.access_token}`,
+        'apikey': SUPABASE_ANON,
       },
       body: JSON.stringify({ to, subject, html, pdfBase64, pdfFilename }),
     });

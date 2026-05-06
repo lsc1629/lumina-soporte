@@ -46,18 +46,27 @@ Deno.serve(async (req) => {
     const { data: { user }, error: authErr } = await sb.auth.getUser(token);
     if (authErr || !user) return respond({ error: 'No autorizado' }, 401);
 
-    // Parsear body opcional (label)
+    // Parsear body opcional (label, target_user_id)
     let label = 'Default';
+    let targetUserId = user.id;
     try {
       const body = await req.json() as Record<string, unknown>;
       if (body.label) label = String(body.label).slice(0, 100);
+      // Si el admin pasa target_user_id, generar la key para ese usuario
+      if (body.target_user_id && typeof body.target_user_id === 'string') {
+        // Verificar que el caller es admin
+        const { data: profile } = await sb.from('profiles').select('role').eq('id', user.id).single();
+        if (profile?.role === 'admin') {
+          targetUserId = body.target_user_id as string;
+        }
+      }
     } catch { /* no body */ }
 
     // Verificar si ya tiene una key activa (limite: 3 por usuario)
     const { count } = await sb
       .from('api_keys')
       .select('id', { count: 'exact', head: true })
-      .eq('user_id', user.id)
+      .eq('user_id', targetUserId)
       .eq('is_active', true);
 
     if ((count || 0) >= 3) {
@@ -71,7 +80,7 @@ Deno.serve(async (req) => {
 
     // Guardar en DB
     const { error: insertErr } = await sb.from('api_keys').insert({
-      user_id: user.id,
+      user_id: targetUserId,
       key_hash: keyHash,
       key_prefix: keyPrefix,
       label,
@@ -83,7 +92,7 @@ Deno.serve(async (req) => {
       return respond({ error: 'Error al crear API Key' }, 500);
     }
 
-    console.log('[generate-api-key] key created for user:', user.id, '| prefix:', keyPrefix);
+    console.log('[generate-api-key] key created for user:', targetUserId, '| prefix:', keyPrefix);
 
     // Devolver la key en texto plano (única vez)
     return respond({

@@ -8,6 +8,7 @@ const corsHeaders = {
 };
 
 const RESEND_KEY = Deno.env.get('RESEND_API_KEY');
+const RESEND_FROM = Deno.env.get('RESEND_FROM_EMAIL') || 'onboarding@resend.dev';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -34,7 +35,7 @@ Deno.serve(async (req) => {
     const recipients = Array.isArray(to) ? to : [to];
 
     const emailPayload: Record<string, unknown> = {
-      from: 'onboarding@resend.dev',
+      from: RESEND_FROM,
       to: recipients,
       subject,
       html,

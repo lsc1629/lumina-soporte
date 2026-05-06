@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { supabase } from '@/lib/supabase';
 import LoadingScreen from '../LoadingScreen';
-import { CheckCircle2, Loader2, Mail, Bell, MessageSquare, Smartphone } from 'lucide-react';
+import { CheckCircle2, Loader2, Mail, Bell, MessageSquare, Smartphone, Users, Shield } from 'lucide-react';
 
 interface NotifPrefs {
   email_incidents: boolean;
@@ -18,6 +18,12 @@ interface NotifPrefs {
   quiet_hours_enabled: boolean;
   quiet_hours_start: string;
   quiet_hours_end: string;
+  admin_notify_incidents: boolean;
+  admin_notify_updates: boolean;
+  admin_notify_reports: boolean;
+  client_notify_incidents: boolean;
+  client_notify_updates: boolean;
+  client_notify_reports: boolean;
 }
 
 const defaults: NotifPrefs = {
@@ -25,6 +31,8 @@ const defaults: NotifPrefs = {
   push_incidents: true, push_updates: false, push_reports: false,
   sms_incidents: false, sms_critical_only: true,
   digest_frequency: 'daily', quiet_hours_enabled: false, quiet_hours_start: '22:00', quiet_hours_end: '08:00',
+  admin_notify_incidents: true, admin_notify_updates: false, admin_notify_reports: true,
+  client_notify_incidents: false, client_notify_updates: false, client_notify_reports: true,
 };
 
 function Toggle({ checked, onChange, label, description }: { checked: boolean; onChange: (v: boolean) => void; label: string; description?: string }) {
@@ -116,6 +124,33 @@ export default function NotificationsSection() {
         <div className="rounded-xl border border-border bg-surface/30 px-4">
           <Toggle checked={prefs.sms_incidents} onChange={(v) => update('sms_incidents', v)} label="Alertas por SMS" description="Solo para incidentes graves" />
           <Toggle checked={prefs.sms_critical_only} onChange={(v) => update('sms_critical_only', v)} label="Solo Críticos" description="Limitar SMS a incidentes de prioridad alta" />
+        </div>
+      </div>
+
+      {/* ── Routing: Admin vs Cliente ── */}
+      <div>
+        <div className="flex items-center gap-2 mb-1">
+          <Shield size={18} className="text-amber-400" />
+          <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Qué me llega a mí (Admin)</h3>
+        </div>
+        <p className="text-xs text-text-muted mb-4">Selecciona qué tipos de alertas recibes en tu correo de administrador.</p>
+        <div className="rounded-xl border border-border bg-surface/30 px-4">
+          <Toggle checked={prefs.admin_notify_incidents} onChange={(v) => update('admin_notify_incidents', v)} label="Incidentes" description="Recibir alertas de caída, incidentes y cambios de estado" />
+          <Toggle checked={prefs.admin_notify_updates} onChange={(v) => update('admin_notify_updates', v)} label="Actualizaciones de plugins" description="Notificarme cuando hay plugins desactualizados" />
+          <Toggle checked={prefs.admin_notify_reports} onChange={(v) => update('admin_notify_reports', v)} label="Informes mensuales" description="Recibir copia de los informes enviados a clientes" />
+        </div>
+      </div>
+
+      <div>
+        <div className="flex items-center gap-2 mb-1">
+          <Users size={18} className="text-primary" />
+          <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Qué le llega al cliente</h3>
+        </div>
+        <p className="text-xs text-text-muted mb-4">Selecciona qué tipos de alertas reciben tus clientes en su correo.</p>
+        <div className="rounded-xl border border-border bg-surface/30 px-4">
+          <Toggle checked={prefs.client_notify_incidents} onChange={(v) => update('client_notify_incidents', v)} label="Incidentes" description="Notificar al cliente cuando hay caídas o incidentes en sus sitios" />
+          <Toggle checked={prefs.client_notify_updates} onChange={(v) => update('client_notify_updates', v)} label="Actualizaciones de plugins" description="Notificar al cliente sobre plugins desactualizados" />
+          <Toggle checked={prefs.client_notify_reports} onChange={(v) => update('client_notify_reports', v)} label="Informes mensuales" description="Enviar informes de rendimiento al correo del cliente" />
         </div>
       </div>
 

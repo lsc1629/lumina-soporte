@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase';
 import LoadingScreen from '../LoadingScreen';
-import { Loader2, CheckCircle2, Link2, Unlink, ExternalLink, Activity, MessageSquare, Code2, Cloud, Mail, Key, Copy, Eye, EyeOff, Trash2, Plus, Bot, AlertTriangle } from 'lucide-react';
+import { Loader2, CheckCircle2, Link2, Unlink, ExternalLink, Activity, MessageSquare, Code2, Cloud, Mail, Key, Copy, Eye, EyeOff, Trash2, Plus, Bot, AlertTriangle, Users } from 'lucide-react';
 
 interface Integration {
   id: string;
@@ -42,6 +42,13 @@ interface ApiKeyRow {
   last_used_at: string | null;
 }
 
+interface ClientOption {
+  id: string;
+  full_name: string;
+  email: string;
+  company_name: string | null;
+}
+
 export default function IntegrationsSection() {
   const [integrations, setIntegrations] = useState<Integration[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,7 +66,15 @@ export default function IntegrationsSection() {
   const [keyCopied, setKeyCopied] = useState(false);
   const [revokingKey, setRevokingKey] = useState<string | null>(null);
 
-  useEffect(() => { load(); loadApiKeys(); }, []);
+  // Admin: generar key para un cliente
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [clients, setClients] = useState<ClientOption[]>([]);
+  const [selectedClientId, setSelectedClientId] = useState<string>('');
+  const [forClientKey, setForClientKey] = useState<string | null>(null);
+  const [forClientKeyCopied, setForClientKeyCopied] = useState(false);
+  const [showForClientKey, setShowForClientKey] = useState(false);
+
+  useEffect(() => { load(); loadApiKeys(); checkAdmin(); }, []);
 
   const load = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -69,6 +84,17 @@ export default function IntegrationsSection() {
     setLoading(false);
   };
 
+  const checkAdmin = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+    if (profile?.role === 'admin') {
+      setIsAdmin(true);
+      const { data } = await supabase.from('profiles').select('id, full_name, email, company_name').eq('role', 'client').order('full_name');
+      if (data) setClients(data as ClientOption[]);
+    }
+  };
+
   const loadApiKeys = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -76,12 +102,15 @@ export default function IntegrationsSection() {
     if (data) setApiKeys(data as ApiKeyRow[]);
   };
 
-  const handleGenerateKey = async () => {
+  const handleGenerateKey = async (targetUserId?: string) => {
     setGeneratingKey(true);
     setNewlyGeneratedKey(null);
+    setForClientKey(null);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
+      const body: Record<string, unknown> = { label: newKeyLabel || 'Default' };
+      if (targetUserId) body.target_user_id = targetUserId;
       const res = await fetch(`${SUPABASE_URL}/functions/v1/generate-api-key`, {
         method: 'POST',
         headers: {
@@ -89,22 +118,25 @@ export default function IntegrationsSection() {
           'Authorization': `Bearer ${session.access_token}`,
           'apikey': SUPABASE_ANON_KEY,
         },
-        body: JSON.stringify({ label: newKeyLabel || 'Default' }),
+        body: JSON.stringify(body),
       });
       const text = await res.text();
-      console.error('[generate-api-key] status:', res.status, 'body:', text);
       let result: Record<string, unknown>;
       try { result = JSON.parse(text); } catch { result = { error: text }; }
       if (result.success && result.api_key) {
-        setNewlyGeneratedKey(result.api_key as string);
-        setShowNewKey(true);
+        if (targetUserId) {
+          setForClientKey(result.api_key as string);
+          setShowForClientKey(true);
+        } else {
+          setNewlyGeneratedKey(result.api_key as string);
+          setShowNewKey(true);
+        }
         setNewKeyLabel('');
         await loadApiKeys();
       } else {
         alert(`Error al generar API Key (HTTP ${res.status}): ${result.error || result.message || text.slice(0, 200)}`);
       }
     } catch (e) {
-      console.error('[generate-api-key] fetch error:', e);
       alert(`Error de conexión: ${e instanceof Error ? e.message : String(e)}`);
     } finally {
       setGeneratingKey(false);
@@ -184,7 +216,62 @@ export default function IntegrationsSection() {
           </div>
         )}
 
-        {/* Generate new key */}
+        {/* Admin: generar key para un cliente */}
+        {isAdmin && clients.length > 0 && (
+          <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <Users size={15} className="text-primary" />
+              <span className="text-sm font-semibold text-white">Generar API Key para un cliente</span>
+            </div>
+            <div className="flex items-end gap-3">
+              <div className="flex-1 space-y-1">
+                <label className="text-xs text-text-muted">Selecciona el cliente</label>
+                <select
+                  value={selectedClientId}
+                  onChange={e => setSelectedClientId(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-white outline-none focus:border-primary"
+                >
+                  <option value="">— Seleccionar cliente —</option>
+                  {clients.map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.full_name || c.email}{c.company_name ? ` — ${c.company_name}` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button
+                onClick={() => selectedClientId && handleGenerateKey(selectedClientId)}
+                disabled={generatingKey || !selectedClientId}
+                className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover transition-colors disabled:opacity-50 shrink-0"
+              >
+                {generatingKey ? <Loader2 size={16} className="animate-spin" /> : <Key size={16} />}
+                Generar
+              </button>
+            </div>
+            {forClientKey && (
+              <div className="rounded-lg border border-warning/40 bg-warning/10 p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle size={14} className="text-warning shrink-0" />
+                  <p className="text-xs font-semibold text-warning">API Key del cliente — no podrás verla de nuevo</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 rounded-lg bg-surface px-3 py-2 text-sm font-mono text-white break-all">
+                    {showForClientKey ? forClientKey : forClientKey.slice(0, 12) + '•'.repeat(30)}
+                  </code>
+                  <button onClick={() => setShowForClientKey(v => !v)} className="rounded-lg border border-border p-2 text-text-muted hover:text-white transition-colors">
+                    {showForClientKey ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                  <button onClick={() => { navigator.clipboard.writeText(forClientKey); setForClientKeyCopied(true); setTimeout(() => setForClientKeyCopied(false), 2000); }} className="rounded-lg border border-border p-2 text-text-muted hover:text-white transition-colors">
+                    {forClientKeyCopied ? <CheckCircle2 size={15} className="text-success" /> : <Copy size={15} />}
+                  </button>
+                </div>
+                <p className="text-xs text-text-muted">Entrégala al cliente para que la pegue en <strong className="text-white">WP Admin → Ajustes → Lumina Agent</strong></p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Generate new key (para el usuario actual) */}
         <div className="flex items-end gap-3">
           <div className="flex-1 space-y-1">
             <label className="text-xs text-text-muted">Etiqueta (opcional)</label>
@@ -197,7 +284,7 @@ export default function IntegrationsSection() {
             />
           </div>
           <button
-            onClick={handleGenerateKey}
+            onClick={() => handleGenerateKey()}
             disabled={generatingKey}
             className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover transition-colors disabled:opacity-50 shrink-0"
           >

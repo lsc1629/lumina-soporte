@@ -69,19 +69,32 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    // Get admin emails
+    // Get admin emails + check their notification preferences
     const { data: admins } = await sb.from('profiles').select('id').eq('role', 'admin');
     const adminEmails: string[] = [];
     for (const admin of (admins || [])) {
+      // Check admin preference for this incident type
+      const { data: prefs } = await sb.from('notification_preferences').select('admin_notify_incidents, email_incidents').eq('user_id', admin.id).single();
+      const wantsIncident = prefs ? (prefs.admin_notify_incidents ?? prefs.email_incidents ?? true) : true;
+      if (!wantsIncident) continue;
       const { data: user } = await sb.auth.admin.getUserById(admin.id);
       if (user?.user?.email) adminEmails.push(user.user.email);
     }
 
-    // Get owner email
+    // Get owner email — only if client_notify_incidents is enabled in admin preferences
     let ownerEmail: string | null = null;
     if (ownerId) {
-      const { data: user } = await sb.auth.admin.getUserById(ownerId);
-      ownerEmail = user?.user?.email || null;
+      // Check global admin preference for notifying clients about incidents
+      const { data: adminsAll } = await sb.from('profiles').select('id').eq('role', 'admin');
+      let clientNotifyEnabled = false;
+      for (const admin of (adminsAll || [])) {
+        const { data: prefs } = await sb.from('notification_preferences').select('client_notify_incidents').eq('user_id', admin.id).single();
+        if (prefs?.client_notify_incidents) { clientNotifyEnabled = true; break; }
+      }
+      if (clientNotifyEnabled) {
+        const { data: user } = await sb.auth.admin.getUserById(ownerId);
+        ownerEmail = user?.user?.email || null;
+      }
     }
 
     const recipients = [...new Set([...adminEmails, ...(ownerEmail ? [ownerEmail] : [])])];
@@ -120,6 +133,7 @@ Deno.serve(async (req: Request) => {
 
     // Send emails via Resend
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
+    const resendFrom = Deno.env.get('RESEND_FROM_EMAIL') || 'onboarding@resend.dev';
     let sent = 0;
 
     if (resendApiKey) {
@@ -132,7 +146,7 @@ Deno.serve(async (req: Request) => {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              from: 'LuminaSupport <onboarding@resend.dev>',
+              from: `LuminaSupport <${resendFrom}>`,
               to: [email],
               subject,
               text: body,

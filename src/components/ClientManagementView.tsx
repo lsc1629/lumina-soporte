@@ -28,7 +28,7 @@ import {
   Eye,
   EyeOff,
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase';
 
 interface Client {
   id: string;
@@ -70,6 +70,10 @@ export default function ClientManagementView() {
   const [newClient, setNewClient] = useState({ email: '', password: '', full_name: '', company_name: '', phone: '', role: 'client', plan_id: '' });
   const [creatingClient, setCreatingClient] = useState(false);
   const [createError, setCreateError] = useState('');
+
+  // Generar API Key para cliente
+  const [generatingKeyFor, setGeneratingKeyFor] = useState<string | null>(null);
+  const [clientApiKey, setClientApiKey] = useState<{ clientId: string; key: string; show: boolean; copied: boolean } | null>(null);
 
   useEffect(() => {
     loadData();
@@ -174,6 +178,30 @@ export default function ClientManagementView() {
     setShowCreateModal(false);
     setNewClient({ email: '', password: '', full_name: '', company_name: '', phone: '', role: 'client', plan_id: '' });
     loadData();
+  };
+
+  const handleGenerateKeyForClient = async (clientId: string) => {
+    setGeneratingKeyFor(clientId);
+    setClientApiKey(null);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/generate-api-key`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}`, 'apikey': SUPABASE_ANON_KEY },
+        body: JSON.stringify({ target_user_id: clientId, label: 'Admin generada' }),
+      });
+      const result = await res.json() as Record<string, unknown>;
+      if (result.success && result.api_key) {
+        setClientApiKey({ clientId, key: result.api_key as string, show: true, copied: false });
+      } else {
+        alert(`Error: ${result.error || 'No se pudo generar la API Key'}`);
+      }
+    } catch (e) {
+      alert(`Error de conexión: ${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setGeneratingKeyFor(null);
+    }
   };
 
   const toggleClientActive = async (clientId: string, isActive: boolean) => {
@@ -392,6 +420,28 @@ export default function ClientManagementView() {
                       )}
                     </div>
                   </div>
+                  {/* API Key para este cliente */}
+                  {clientApiKey?.clientId === client.id && (
+                    <div className="mt-3 rounded-lg border border-warning/40 bg-warning/10 p-3 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Key size={13} className="text-warning shrink-0" />
+                        <p className="text-xs font-semibold text-warning">API Key generada — cópiala ahora, no podrás verla de nuevo</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <code className="flex-1 rounded-lg bg-surface px-3 py-2 text-xs font-mono text-white break-all">
+                          {clientApiKey.show ? clientApiKey.key : clientApiKey.key.slice(0, 12) + '•'.repeat(28)}
+                        </code>
+                        <button onClick={(e) => { e.stopPropagation(); setClientApiKey(v => v ? { ...v, show: !v.show } : null); }} className="rounded-lg border border-border p-1.5 text-text-muted hover:text-white">
+                          {clientApiKey.show ? <EyeOff size={13} /> : <Eye size={13} />}
+                        </button>
+                        <button onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(clientApiKey.key); setClientApiKey(v => v ? { ...v, copied: true } : null); setTimeout(() => setClientApiKey(v => v ? { ...v, copied: false } : null), 2000); }} className="rounded-lg border border-border p-1.5 text-text-muted hover:text-white">
+                          {clientApiKey.copied ? <CheckCircle2 size={13} className="text-success" /> : <Copy size={13} />}
+                        </button>
+                      </div>
+                      <p className="text-[11px] text-text-muted">Entrégala al cliente: <strong className="text-white">WP Admin → Ajustes → Lumina Agent</strong></p>
+                    </div>
+                  )}
+
                   <div className="flex gap-2 mt-4 pt-3 border-t border-border">
                     <button
                       onClick={(e) => { e.stopPropagation(); setEditingClient(client); }}
@@ -408,6 +458,14 @@ export default function ClientManagementView() {
                       }`}
                     >
                       {client.is_active ? <><EyeOff size={12} /> Desactivar</> : <><Eye size={12} /> Activar</>}
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleGenerateKeyForClient(client.id); }}
+                      disabled={generatingKeyFor === client.id}
+                      className="flex items-center gap-1.5 rounded-lg border border-primary/30 px-3 py-1.5 text-xs text-primary hover:bg-primary/10 transition-colors disabled:opacity-50 ml-auto"
+                    >
+                      {generatingKeyFor === client.id ? <Loader2 size={12} className="animate-spin" /> : <Key size={12} />}
+                      Generar API Key
                     </button>
                   </div>
                 </motion.div>

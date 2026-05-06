@@ -3,7 +3,7 @@
  * Plugin Name: Lumina Agent
  * Plugin URI:  https://lumina.app
  * Description: Conecta tu sitio WordPress con Lumina — monitoreo, actualizaciones y gestión remota con una sola API Key.
- * Version: 3.0.0
+ * Version: 3.0.1
  * Author: Lumina
  * Requires at least: 5.6
  * Requires PHP: 7.4
@@ -27,10 +27,83 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'LUMINA_AGENT_VERSION', '3.0.0' );
+define( 'LUMINA_AGENT_VERSION', '3.0.1' );
 define( 'LUMINA_AGENT_OPT', 'lumina_agent_' );
 // URL base de la API de Lumina (Supabase Edge Functions)
 define( 'LUMINA_API_BASE', 'https://bd.luissalascortes.dev/functions/v1' );
+
+/* ================================================================
+   PRESERVAR OPCIONES DURANTE ACTUALIZACIONES DEL PLUGIN
+   Antes de actualizar el plugin, Lumina updater llama a activate_plugin()
+   que puede disparar el hook de activación y borrar los datos de conexión.
+   Este hook respalda y restaura las opciones críticas.
+   ================================================================ */
+
+add_action( 'upgrader_process_complete', 'lumina_agent_backup_on_upgrade', 10, 2 );
+
+function lumina_agent_backup_on_upgrade( $upgrader, $options ) {
+	if (
+		empty( $options['action'] ) ||
+		$options['action'] !== 'update' ||
+		empty( $options['type'] ) ||
+		$options['type'] !== 'plugin'
+	) {
+		return;
+	}
+
+	$plugins = $options['plugins'] ?? ( isset( $options['plugin'] ) ? array( $options['plugin'] ) : array() );
+	$this_plugin = plugin_basename( __FILE__ );
+
+	if ( ! in_array( $this_plugin, $plugins, true ) ) {
+		return;
+	}
+
+	// El plugin se acaba de actualizar — restaurar opciones de conexión si se perdieron
+	$backup = get_option( 'lumina_agent_connection_backup', array() );
+	if ( ! empty( $backup ) ) {
+		foreach ( $backup as $key => $val ) {
+			if ( get_option( $key ) === false || get_option( $key ) === '' ) {
+				update_option( $key, $val, true );
+			}
+		}
+		delete_option( 'lumina_agent_connection_backup' );
+	}
+}
+
+/* ================================================================
+   RESPALDO PREVENTIVO — Se ejecuta antes de cualquier actualización
+   ================================================================ */
+
+add_action( 'upgrader_pre_install', 'lumina_agent_pre_upgrade_backup', 10, 2 );
+
+function lumina_agent_pre_upgrade_backup( $response, $hook_extra ) {
+	$this_plugin = plugin_basename( __FILE__ );
+	if ( ! isset( $hook_extra['plugin'] ) || $hook_extra['plugin'] !== $this_plugin ) {
+		return $response;
+	}
+
+	$opts_to_backup = array(
+		LUMINA_AGENT_OPT . 'api_key',
+		LUMINA_AGENT_OPT . 'connected',
+		LUMINA_AGENT_OPT . 'site_token',
+		LUMINA_AGENT_OPT . 'project_id',
+		LUMINA_AGENT_OPT . 'connected_at',
+	);
+
+	$backup = array();
+	foreach ( $opts_to_backup as $opt ) {
+		$val = get_option( $opt );
+		if ( $val !== false && $val !== '' ) {
+			$backup[ $opt ] = $val;
+		}
+	}
+
+	if ( ! empty( $backup ) ) {
+		update_option( 'lumina_agent_connection_backup', $backup, true );
+	}
+
+	return $response;
+}
 
 /* ================================================================
    ADMIN MENU — Settings bajo Ajustes
@@ -448,6 +521,7 @@ function lumina_agent_plugins_callback() {
 	require_once ABSPATH . 'wp-admin/includes/plugin.php';
 	require_once ABSPATH . 'wp-admin/includes/update.php';
 
+	wp_clean_plugins_cache( true );
 	wp_update_plugins();
 	$update_plugins = get_site_transient( 'update_plugins' );
 	$all_plugins    = get_plugins();
@@ -493,6 +567,7 @@ function lumina_agent_plugins_callback() {
 function lumina_agent_themes_callback() {
 	require_once ABSPATH . 'wp-admin/includes/update.php';
 
+	wp_clean_themes_cache( true );
 	wp_update_themes();
 	$update_themes = get_site_transient( 'update_themes' );
 	$all_themes    = wp_get_themes();

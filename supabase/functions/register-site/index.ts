@@ -114,9 +114,9 @@ Deno.serve(async (req) => {
       siteToken = crypto.randomUUID();
       isNew = true;
 
-      // Determinar plataforma
-      let platform = 'wordpress';
-      if (woocommerce) platform = 'woocommerce';
+      // Determinar plataforma — el enum solo acepta 'wordpress' (woocommerce se guarda en platform_key)
+      const platform = 'wordpress';
+      const platformKey = woocommerce ? 'woocommerce' : 'wordpress';
 
       // Generar nombre del proyecto a partir de la URL
       const projectName = siteName || new URL(normalizedUrl).hostname.replace('www.', '');
@@ -125,6 +125,7 @@ Deno.serve(async (req) => {
         name: projectName,
         url: normalizedUrl,
         platform,
+        platform_key: platformKey,
         owner_id: userId,
         is_active: true,
         status: 'up',
