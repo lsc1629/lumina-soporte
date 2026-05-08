@@ -6,7 +6,7 @@ const resources = [
     id: 'lumina-agent',
     name: 'Lumina Agent',
     description: 'Plugin de WordPress que conecta tu sitio con LuminaSupport usando una API Key. Permite monitoreo, actualizaciones remotas de plugins/temas/core y registro automático del sitio. Solo necesitas pegar tu API Key.',
-    version: '3.1.0',
+    version: '3.2.0',
     icon: Bot,
     file: '/lumina-agent.zip',
     instructions: [

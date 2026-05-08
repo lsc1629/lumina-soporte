@@ -3,7 +3,7 @@
  * Plugin Name: Lumina Agent
  * Plugin URI:  https://lumina.app
  * Description: Conecta tu sitio WordPress con Lumina — monitoreo, actualizaciones y gestión remota con una sola API Key.
- * Version: 3.1.0
+ * Version: 3.2.0
  * Author: Lumina
  * Requires at least: 5.6
  * Requires PHP: 7.4
