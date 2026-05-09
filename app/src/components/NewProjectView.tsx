@@ -509,8 +509,12 @@ export default function NewProjectView({ onCancel }: NewProjectViewProps) {
 
   const goToStep3 = () => {
     setError('');
-    if (!form.name.trim() || !form.url.trim() || !form.platform) {
-      setError('Completa los campos obligatorios: nombre, URL y plataforma.');
+    const missing: string[] = [];
+    if (!form.name.trim()) missing.push('nombre');
+    if (!form.url.trim()) missing.push('URL');
+    if (!form.platform) missing.push('plataforma');
+    if (missing.length > 0) {
+      setError(`Falta: ${missing.join(', ')}`);
       return;
     }
     setStep(3);
