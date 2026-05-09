@@ -555,6 +555,23 @@ Deno.serve(async (req) => {
         await Promise.allSettled(unknownUpdates);
         console.log('[fetch-plugins] marked', stillUnknown.length, 'plugins as unknown (premium/proprietary):', stillUnknown.map(r => r.slug).join(', '));
       }
+
+      // Auto-mark premium plugins with updates as pending_purchase
+      // These have latest_version from the Agent (WP knows about update) but are NOT on wp.org
+      const premiumWithUpdate = results.filter(r =>
+        r.latest_version && r.latest_version !== '' && r.latest_version !== r.current_version && !latestVersions.has(r.slug) && !stillUnknown.some(u => u.slug === r.slug)
+      );
+      if (premiumWithUpdate.length > 0) {
+        const premiumUpdates = premiumWithUpdate.map(r =>
+          sb.from('project_plugins')
+            .update({ license_status: 'pending_purchase' })
+            .eq('project_id', project.id)
+            .eq('slug', r.slug)
+            .is('license_status', null)
+        );
+        await Promise.allSettled(premiumUpdates);
+        console.log('[fetch-plugins] auto-marked', premiumWithUpdate.length, 'premium plugins as pending_purchase:', premiumWithUpdate.map(r => r.slug).join(', '));
+      }
     }
 
     // ── Check WP core latest version ──
