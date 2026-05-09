@@ -67,6 +67,9 @@ export default function IntegrationsSection() {
   const [keyCopied, setKeyCopied] = useState(false);
   const [revokingKey, setRevokingKey] = useState<string | null>(null);
 
+  // Custom confirm dialog state
+  const [revokeConfirmId, setRevokeConfirmId] = useState<string | null>(null);
+
   // Admin: generar key para un cliente
   const [isAdmin, setIsAdmin] = useState(false);
   const [clients, setClients] = useState<ClientOption[]>([]);
@@ -160,11 +163,16 @@ export default function IntegrationsSection() {
   };
 
   const handleRevokeKey = async (id: string) => {
-    if (!confirm('¿Revocar esta API Key? Los sitios que la usen se desconectarán.')) return;
-    setRevokingKey(id);
-    await supabase.from('api_keys').update({ is_active: false }).eq('id', id);
+    setRevokeConfirmId(id);
+  };
+
+  const confirmRevoke = async () => {
+    if (!revokeConfirmId) return;
+    setRevokingKey(revokeConfirmId);
+    await supabase.from('api_keys').update({ is_active: false }).eq('id', revokeConfirmId);
     await loadApiKeys();
     setRevokingKey(null);
+    setRevokeConfirmId(null);
   };
 
   const copyKey = (text: string) => {
@@ -423,6 +431,42 @@ export default function IntegrationsSection() {
           </div>
         )}
       </div>
+
+      {/* ═══ Confirm Dialog ═══ */}
+      {revokeConfirmId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="glass-panel rounded-2xl p-6 max-w-sm w-full mx-4 space-y-4 border border-border shadow-2xl">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-error/10">
+                <AlertTriangle size={20} className="text-error" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-white">Revocar API Key</h3>
+                <p className="text-xs text-text-muted">Esta acción no se puede deshacer</p>
+              </div>
+            </div>
+            <p className="text-sm text-text-muted">
+              ¿Revocar esta API Key? Los sitios WordPress que la usen se desconectarán y dejarán de sincronizarse.
+            </p>
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setRevokeConfirmId(null)}
+                className="rounded-lg border border-border px-4 py-2 text-xs font-medium text-text-muted hover:text-white hover:bg-surface-hover transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmRevoke}
+                disabled={revokingKey === revokeConfirmId}
+                className="flex items-center gap-1 rounded-lg bg-error px-4 py-2 text-xs font-medium text-white hover:bg-error/80 transition-colors disabled:opacity-50"
+              >
+                {revokingKey === revokeConfirmId ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
+                Revocar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }
