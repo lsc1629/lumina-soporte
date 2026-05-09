@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! defined( 'LUMINA_AGENT_VERSION' ) ) define( 'LUMINA_AGENT_VERSION', '3.1.0' );
+if ( ! defined( 'LUMINA_AGENT_VERSION' ) ) define( 'LUMINA_AGENT_VERSION', '3.2.0' );
 if ( ! defined( 'LUMINA_AGENT_OPT' ) )     define( 'LUMINA_AGENT_OPT', 'lumina_agent_' );
 if ( ! defined( 'LUMINA_API_BASE' ) )      define( 'LUMINA_API_BASE', 'https://bd.luissalascortes.dev/functions/v1' );
 
