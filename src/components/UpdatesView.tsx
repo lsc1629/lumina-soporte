@@ -90,6 +90,7 @@ interface ClientInfo {
   company_name: string;
   project_count: number;
   pending_updates: number;
+  plugin_updates: number;
 }
 
 interface ProjectInfo {
@@ -180,6 +181,11 @@ export default function UpdatesView() {
       .select('id, project_id, priority')
       .eq('status', 'pending');
 
+    const { data: allPlugins } = await supabase
+      .from('project_plugins')
+      .select('project_id, current_version, latest_version')
+      .not('latest_version', 'is', null);
+
     const projectsByOwner = new Map<string, string[]>();
     (allProjects || []).forEach(p => {
       const list = projectsByOwner.get(p.owner_id) || [];
@@ -194,13 +200,22 @@ export default function UpdatesView() {
       updatesByProject.set(u.project_id, list);
     });
 
+    const outdatedByProject = new Map<string, number>();
+    (allPlugins || []).forEach(pl => {
+      if (pl.latest_version && pl.latest_version !== '' && pl.latest_version !== 'unknown' && pl.latest_version !== pl.current_version) {
+        outdatedByProject.set(pl.project_id, (outdatedByProject.get(pl.project_id) || 0) + 1);
+      }
+    });
+
     const clientList: ClientInfo[] = (profiles || [])
       .filter(p => projectsByOwner.has(p.id))
       .map(p => {
         const projIds = projectsByOwner.get(p.id) || [];
         let pending = 0;
+        let pluginUpd = 0;
         projIds.forEach(pid => {
           pending += (updatesByProject.get(pid) || []).length;
+          pluginUpd += outdatedByProject.get(pid) || 0;
         });
         return {
           id: p.id,
@@ -209,6 +224,7 @@ export default function UpdatesView() {
           company_name: p.company_name || '',
           project_count: projIds.length,
           pending_updates: pending,
+          plugin_updates: pluginUpd,
         };
       });
 
@@ -678,11 +694,17 @@ export default function UpdatesView() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
+                      {client.plugin_updates > 0 && (
+                        <div className="flex items-center gap-1.5 rounded-full bg-warning/15 border border-warning/30 px-2.5 py-1">
+                          <Package size={12} className="text-warning" />
+                          <span className="text-xs font-semibold text-warning">{client.plugin_updates} plugin{client.plugin_updates !== 1 ? 's' : ''}</span>
+                        </div>
+                      )}
                       <div className="text-right">
                         <p className="text-sm font-medium text-white">{client.project_count} proyecto{client.project_count !== 1 ? 's' : ''}</p>
                         {client.pending_updates > 0 && (
-                          <p className="text-xs text-warning">{client.pending_updates} update{client.pending_updates !== 1 ? 's' : ''} pendiente{client.pending_updates !== 1 ? 's' : ''}</p>
+                          <p className="text-xs text-text-muted">{client.pending_updates} pendiente{client.pending_updates !== 1 ? 's' : ''}</p>
                         )}
                       </div>
                       <ChevronRight size={18} className="text-text-muted" />

@@ -3,7 +3,7 @@
  * Plugin Name: Lumina Agent
  * Plugin URI:  https://lumina.app
  * Description: Conecta tu sitio WordPress con Lumina — monitoreo, actualizaciones y gestión remota con una sola API Key.
- * Version: 3.2.0
+ * Version: 3.3.0
  * Author: Lumina
  * Requires at least: 5.6
  * Requires PHP: 7.4
@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! defined( 'LUMINA_AGENT_VERSION' ) ) define( 'LUMINA_AGENT_VERSION', '3.2.0' );
+if ( ! defined( 'LUMINA_AGENT_VERSION' ) ) define( 'LUMINA_AGENT_VERSION', '3.3.0' );
 if ( ! defined( 'LUMINA_AGENT_OPT' ) )     define( 'LUMINA_AGENT_OPT', 'lumina_agent_' );
 if ( ! defined( 'LUMINA_API_BASE' ) )      define( 'LUMINA_API_BASE', 'https://bd.luissalascortes.dev/functions/v1' );
 
