@@ -185,7 +185,7 @@ export default function UpdatesView() {
 
     const { data: allPlugins } = await supabase
       .from('project_plugins')
-      .select('project_id, current_version, latest_version')
+      .select('project_id, current_version, latest_version, license_status')
       .not('latest_version', 'is', null);
 
     const projectsByOwner = new Map<string, string[]>();
@@ -204,7 +204,7 @@ export default function UpdatesView() {
 
     const outdatedByProject = new Map<string, number>();
     (allPlugins || []).forEach(pl => {
-      if (pl.latest_version && pl.latest_version !== '' && pl.latest_version !== 'unknown' && pl.latest_version !== pl.current_version) {
+      if (pl.latest_version && pl.latest_version !== '' && pl.latest_version !== 'unknown' && pl.latest_version !== pl.current_version && !pl.license_status) {
         outdatedByProject.set(pl.project_id, (outdatedByProject.get(pl.project_id) || 0) + 1);
       }
     });
