@@ -63,13 +63,15 @@ Deno.serve(async (req) => {
       }
     } catch { /* no body */ }
 
-    // Si NO es admin generando para otro, aplicar límite de 3 keys propias
-    if (!isAdmin) {
+    if (isAdmin) {
+      // Admin generando para cliente: eliminar TODAS las keys anteriores del cliente
+      await sb.from('api_keys').delete().eq('user_id', targetUserId);
+    } else {
+      // Usuario normal: límite de 3 keys propias
       const { count } = await sb
         .from('api_keys')
         .select('id', { count: 'exact', head: true })
-        .eq('user_id', targetUserId)
-        .eq('is_active', true);
+        .eq('user_id', targetUserId);
 
       if ((count || 0) >= 3) {
         return respond({ error: 'Máximo 3 API Keys activas por cuenta. Revoca una antes de crear otra.' }, 400);
