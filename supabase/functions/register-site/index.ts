@@ -76,12 +76,17 @@ Deno.serve(async (req) => {
     if (!normalizedUrl.startsWith('http')) {
       normalizedUrl = 'https://' + normalizedUrl;
     }
+    // bare = sin protocolo (ej: "enzytech.cl")
+    const bareUrl = normalizedUrl.replace(/^https?:\/\//, '');
 
     // 3. Buscar si ya existe un proyecto con esa URL para este usuario
+    // Buscar por URL con o sin https:// para no crear duplicados al reconectar
     const { data: existing } = await sb
       .from('projects')
       .select('id, name, site_token, owner_id')
-      .ilike('url', normalizedUrl)
+      .or(`url.ilike.${normalizedUrl},url.ilike.${bareUrl},url.ilike.http://${bareUrl}`)
+      .eq('owner_id', userId)
+      .eq('is_active', true)
       .limit(1)
       .maybeSingle();
 
