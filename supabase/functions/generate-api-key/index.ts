@@ -49,28 +49,31 @@ Deno.serve(async (req) => {
     // Parsear body opcional (label, target_user_id)
     let label = 'Default';
     let targetUserId = user.id;
+    let isAdmin = false;
     try {
       const body = await req.json() as Record<string, unknown>;
       if (body.label) label = String(body.label).slice(0, 100);
-      // Si el admin pasa target_user_id, generar la key para ese usuario
       if (body.target_user_id && typeof body.target_user_id === 'string') {
         // Verificar que el caller es admin
         const { data: profile } = await sb.from('profiles').select('role').eq('id', user.id).single();
         if (profile?.role === 'admin') {
+          isAdmin = true;
           targetUserId = body.target_user_id as string;
         }
       }
     } catch { /* no body */ }
 
-    // Verificar si ya tiene una key activa (limite: 3 por usuario)
-    const { count } = await sb
-      .from('api_keys')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', targetUserId)
-      .eq('is_active', true);
+    // Si NO es admin generando para otro, aplicar límite de 3 keys propias
+    if (!isAdmin) {
+      const { count } = await sb
+        .from('api_keys')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', targetUserId)
+        .eq('is_active', true);
 
-    if ((count || 0) >= 3) {
-      return respond({ error: 'Máximo 3 API Keys activas por cuenta. Revoca una antes de crear otra.' }, 400);
+      if ((count || 0) >= 3) {
+        return respond({ error: 'Máximo 3 API Keys activas por cuenta. Revoca una antes de crear otra.' }, 400);
+      }
     }
 
     // Generar la key
