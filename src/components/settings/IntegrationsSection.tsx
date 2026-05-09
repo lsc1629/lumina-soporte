@@ -168,11 +168,13 @@ export default function IntegrationsSection() {
 
   const confirmRevoke = async () => {
     if (!revokeConfirmId) return;
-    setRevokingKey(revokeConfirmId);
-    await supabase.from('api_keys').update({ is_active: false }).eq('id', revokeConfirmId);
-    await loadApiKeys();
-    setRevokingKey(null);
+    const keyId = revokeConfirmId;
+    setRevokingKey(keyId);
+    // Actualizar estado local inmediatamente — la key desaparece al instante
+    setApiKeys(prev => prev.map(k => k.id === keyId ? { ...k, is_active: false } : k));
     setRevokeConfirmId(null);
+    await supabase.from('api_keys').update({ is_active: false }).eq('id', keyId);
+    setRevokingKey(null);
   };
 
   const copyKey = (text: string) => {
