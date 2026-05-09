@@ -35,6 +35,7 @@ const serviceColors: Record<string, string> = {
 
 interface ApiKeyRow {
   id: string;
+  user_id?: string;
   key_prefix: string;
   label: string;
   is_active: boolean;
@@ -98,7 +99,22 @@ export default function IntegrationsSection() {
   const loadApiKeys = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    const { data } = await supabase.from('api_keys').select('id, key_prefix, label, is_active, created_at, last_used_at').eq('user_id', user.id).order('created_at', { ascending: false });
+
+    let query = supabase
+      .from('api_keys')
+      .select('id, user_id, key_prefix, label, is_active, created_at, last_used_at')
+      .order('created_at', { ascending: false });
+
+    if (isAdmin) {
+      // Admin ve sus keys + keys de todos los clientes
+      const { data: clientProfiles } = await supabase.from('profiles').select('id').eq('role', 'client');
+      const clientIds = (clientProfiles || []).map(c => c.id);
+      query = query.in('user_id', [user.id, ...clientIds]);
+    } else {
+      query = query.eq('user_id', user.id);
+    }
+
+    const { data } = await query;
     if (data) setApiKeys(data as ApiKeyRow[]);
   };
 
@@ -286,6 +302,9 @@ export default function IntegrationsSection() {
                       {!k.is_active && <span className="rounded bg-error/20 px-1.5 py-0.5 text-[10px] font-semibold text-error">Revocada</span>}
                     </div>
                     <div className="flex gap-3 text-[11px] text-text-muted mt-0.5">
+                      {isAdmin && k.user_id && (
+                        <span className="text-primary/70">{clients.find(c => c.id === k.user_id)?.full_name || 'Cliente'}</span>
+                      )}
                       <span>Creada: {new Date(k.created_at).toLocaleDateString('es-CL')}</span>
                       {k.last_used_at && <span>Último uso: {new Date(k.last_used_at).toLocaleDateString('es-CL')}</span>}
                     </div>
