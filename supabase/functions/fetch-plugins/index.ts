@@ -471,17 +471,19 @@ Deno.serve(async (req) => {
       }
     }
 
-    // ── Fetch latest_version from WordPress.org API for plugins that didn't get it from WP REST API ──
+    // ── Fetch latest_version from WordPress.org API for ALL plugins to detect which are premium ──
     if (isWp && results.length > 0) {
+      const allPluginSlugs = results.filter(r => r.plugin_type === 'plugin').map(r => r.slug);
       const pluginSlugs = results.filter(r => r.plugin_type === 'plugin' && !r.latest_version).map(r => r.slug);
-      console.log('[fetch-plugins] checking latest versions for', pluginSlugs.length, 'plugins on wp.org (skipped', results.filter(r => r.plugin_type === 'plugin' && r.latest_version).length, 'already known)');
+      console.log('[fetch-plugins] checking', allPluginSlugs.length, 'plugins on wp.org (', pluginSlugs.length, 'need latest_version)');
 
-      // Batch: query wp.org API for each slug (up to 50 in parallel batches of 5)
+      // Batch: query wp.org API for ALL plugin slugs to detect which exist on wp.org
       const BATCH_SIZE = 5;
       const latestVersions = new Map<string, string>();
+      const wpOrgSlugs = new Set<string>();
 
-      for (let i = 0; i < pluginSlugs.length; i += BATCH_SIZE) {
-        const batch = pluginSlugs.slice(i, i + BATCH_SIZE);
+      for (let i = 0; i < allPluginSlugs.length; i += BATCH_SIZE) {
+        const batch = allPluginSlugs.slice(i, i + BATCH_SIZE);
         const promises = batch.map(async (slug) => {
           try {
             const ctrl = new AbortController();
@@ -494,6 +496,7 @@ Deno.serve(async (req) => {
             if (res.ok) {
               const data = await res.json() as { version?: string; error?: string };
               if (data.version && !data.error) {
+                wpOrgSlugs.add(slug);
                 latestVersions.set(slug, data.version);
               }
             }
@@ -502,7 +505,7 @@ Deno.serve(async (req) => {
         await Promise.all(promises);
       }
 
-      console.log('[fetch-plugins] found latest versions for', latestVersions.size, 'of', pluginSlugs.length, 'plugins');
+      console.log('[fetch-plugins] wp.org: found', wpOrgSlugs.size, 'of', allPluginSlugs.length, 'plugins |', latestVersions.size, 'with latest_version');
 
       // Also check themes on wp.org
       const themeSlugs = results.filter(r => r.plugin_type === 'theme').map(r => r.slug);
@@ -542,9 +545,8 @@ Deno.serve(async (req) => {
         console.log('[fetch-plugins] updated latest_version for', latestVersions.size, 'plugins/themes via wp.org');
       }
 
-      // Mark plugins/themes still without latest_version as 'unknown' (premium/proprietary)
-      // so the UI can show them as "Sin verificar" instead of hiding them
-      const stillUnknown = results.filter(r => !r.latest_version && !latestVersions.has(r.slug));
+      // Mark plugins NOT on wp.org and without latest_version as 'unknown' (premium/proprietary)
+      const stillUnknown = results.filter(r => r.plugin_type === 'plugin' && !r.latest_version && !wpOrgSlugs.has(r.slug));
       if (stillUnknown.length > 0) {
         const unknownUpdates = stillUnknown.map(r =>
           sb.from('project_plugins')
@@ -556,10 +558,9 @@ Deno.serve(async (req) => {
         console.log('[fetch-plugins] marked', stillUnknown.length, 'plugins as unknown (premium/proprietary):', stillUnknown.map(r => r.slug).join(', '));
       }
 
-      // Auto-mark premium plugins with updates as pending_purchase
-      // These have latest_version from the Agent (WP knows about update) but are NOT on wp.org
+      // Auto-mark premium plugins (NOT on wp.org) with pending updates as pending_purchase
       const premiumWithUpdate = results.filter(r =>
-        r.latest_version && r.latest_version !== '' && r.latest_version !== r.current_version && !latestVersions.has(r.slug) && !stillUnknown.some(u => u.slug === r.slug)
+        r.plugin_type === 'plugin' && r.latest_version && r.latest_version !== '' && r.latest_version !== r.current_version && !wpOrgSlugs.has(r.slug)
       );
       if (premiumWithUpdate.length > 0) {
         const premiumUpdates = premiumWithUpdate.map(r =>
@@ -571,6 +572,19 @@ Deno.serve(async (req) => {
         );
         await Promise.allSettled(premiumUpdates);
         console.log('[fetch-plugins] auto-marked', premiumWithUpdate.length, 'premium plugins as pending_purchase:', premiumWithUpdate.map(r => r.slug).join(', '));
+      }
+
+      // Clear license_status for plugins that ARE on wp.org (in case they were wrongly marked)
+      const wronglyMarked = results.filter(r => r.plugin_type === 'plugin' && wpOrgSlugs.has(r.slug));
+      if (wronglyMarked.length > 0) {
+        const clearUpdates = wronglyMarked.map(r =>
+          sb.from('project_plugins')
+            .update({ license_status: null })
+            .eq('project_id', project.id)
+            .eq('slug', r.slug)
+            .not('license_status', 'is', null)
+        );
+        await Promise.allSettled(clearUpdates);
       }
     }
 
