@@ -832,33 +832,7 @@ export default function NewProjectView({ onCancel }: NewProjectViewProps) {
               {/* Platform guide + credentials */}
               {selectedPlatform && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 border-t border-border pt-8">
-                  {/* Connection guide */}
-                  <div className="rounded-xl border border-primary/20 bg-primary/5 p-5 space-y-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className={`flex h-10 w-10 items-center justify-center rounded-lg bg-surface border border-border`}>
-                          <selectedPlatform.icon size={20} className={selectedPlatform.color} />
-                        </div>
-                        <div>
-                          <h3 className="text-sm font-semibold text-white">{selectedPlatform.guide.title}</h3>
-                          <p className="text-xs text-text-muted">Sigue estos pasos para conectar tu sitio</p>
-                        </div>
-                      </div>
-                      {selectedPlatform.guide.docsUrl && (
-                        <a href={selectedPlatform.guide.docsUrl} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-text-muted hover:text-white hover:border-primary/50 transition-colors">
-                          <ExternalLink size={12} /> Docs
-                        </a>
-                      )}
-                    </div>
-                    <ol className="space-y-2 ml-1">
-                      {selectedPlatform.guide.steps.map((s, i) => (
-                        <li key={i} className="flex items-start gap-3 text-sm">
-                          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/20 text-[10px] font-bold text-primary mt-0.5">{i + 1}</span>
-                          <span className="text-text-muted">{s}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
+                  
 
                   {/* Lumina Agent recommendation for WordPress platforms */}
                   {['wordpress', 'wordpress-headless', 'woocommerce', 'woo-headless'].includes(form.platform) && (
@@ -882,62 +856,7 @@ export default function NewProjectView({ onCancel }: NewProjectViewProps) {
                     </div>
                   )}
 
-                  {/* IMPORTANT: WordPress Application Password warning (manual fallback) */}
-                  {['wordpress', 'wordpress-headless'].includes(form.platform) && (
-                    <div className="rounded-xl border border-warning/30 bg-warning/5 p-5 space-y-3">
-                      <div className="flex items-center gap-3">
-                        <AlertTriangle size={20} className="text-warning shrink-0" />
-                        <h4 className="text-sm font-bold text-warning">Método Alternativo: Contraseña de Aplicación</h4>
-                      </div>
-                      <p className="text-sm text-white/80 leading-relaxed">
-                        Si prefieres no usar el plugin, genera una <strong className="text-white">Contraseña de Aplicación</strong> manualmente:
-                      </p>
-                      <ol className="space-y-1.5 ml-1 text-sm text-text-muted">
-                        <li className="flex items-start gap-2">
-                          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-warning/20 text-[10px] font-bold text-warning mt-0.5">1</span>
-                          Ve a <strong className="text-white">WordPress → Usuarios → Tu Perfil</strong> (debe ser Administrador)
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-warning/20 text-[10px] font-bold text-warning mt-0.5">2</span>
-                          Busca la sección <strong className="text-white">"Contraseñas de aplicación"</strong> (al final de la página)
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-warning/20 text-[10px] font-bold text-warning mt-0.5">3</span>
-                          Escribe un nombre (ej: "LuminaSupport") y haz click en <strong className="text-white">"Añadir nueva contraseña de aplicación"</strong>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-warning/20 text-[10px] font-bold text-warning mt-0.5">4</span>
-                          Copia la contraseña generada (formato: <code className="text-primary bg-surface px-1.5 py-0.5 rounded text-xs">aBcD eFgH iJkL mNoP qRsT uVwX</code>) y pégala abajo
-                        </li>
-                      </ol>
-                      <p className="text-xs text-warning/70 italic">* La contraseña de aplicación solo se muestra una vez. Si la pierdes, genera una nueva.</p>
-                    </div>
-                  )}
-
-                  {/* Dynamic credential fields */}
-                  <div className="space-y-4">
-                    <h2 className="font-display text-xl font-semibold text-white flex items-center gap-2">
-                      <Key size={20} className="text-secondary" />
-                      Credenciales de {selectedPlatform.label}
-                    </h2>
-                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-                      {selectedPlatform.guide.fields.map((field) => (
-                        <div key={field.key} className={`space-y-2 ${selectedPlatform.guide.fields.length % 2 !== 0 && field === selectedPlatform.guide.fields[selectedPlatform.guide.fields.length - 1] ? 'md:col-span-2' : ''}`}>
-                          <label className="text-sm font-medium text-text-muted">{field.label}</label>
-                          <div className="relative">
-                            <input
-                              type={field.type || 'text'}
-                              value={String(form[field.key as keyof typeof form] || '')}
-                              onChange={e => update(field.key, e.target.value)}
-                              placeholder={field.placeholder}
-                              className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                            />
-                            {field.type === 'password' && <Key size={14} className="absolute right-4 top-3.5 text-text-muted" />}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  
 
                   {/* Frontend section for headless */}
                   {selectedPlatform.isHeadless && selectedPlatform.frontendGuide && (
