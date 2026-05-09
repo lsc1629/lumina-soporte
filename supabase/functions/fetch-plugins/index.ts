@@ -609,7 +609,7 @@ Deno.serve(async (req) => {
     // Return full list from DB
     const { data: all, error: lErr } = await sb
       .from('project_plugins')
-      .select('id, name, slug, current_version, latest_version, is_active, plugin_type, author, plugin_file, auto_update')
+      .select('id, name, slug, current_version, latest_version, is_active, plugin_type, author, plugin_file, auto_update, license_status')
       .eq('project_id', project.id)
       .order('name');
 
@@ -618,8 +618,8 @@ Deno.serve(async (req) => {
       return ok({ plugins: [], api_error: `DB read: ${lErr.message}` });
     }
 
-    // Calculate outdated count — exclude 'unknown' (premium/proprietary plugins without wp.org listing)
-    const outdatedCount = (all || []).filter(p => p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version).length;
+    // Calculate outdated count — exclude 'unknown' and plugins with license_status
+    const outdatedCount = (all || []).filter(p => p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version && !p.license_status).length;
     console.log('[fetch-plugins] done, returning', (all || []).length, 'wp_version:', wpVersion, 'wp_latest:', wpLatestVersion, 'outdated:', outdatedCount);
     return ok({ plugins: all || [], fetched_count: results.length, outdated_count: outdatedCount, api_error: apiError, wp_version: wpVersion, wp_latest_version: wpLatestVersion });
 
