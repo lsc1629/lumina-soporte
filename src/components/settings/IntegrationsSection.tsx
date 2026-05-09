@@ -295,11 +295,11 @@ export default function IntegrationsSection() {
           </div>
         )}
 
-        {/* Existing keys list */}
-        {apiKeys.length > 0 && (
+        {/* Existing keys list — solo activas */}
+        {apiKeys.filter(k => k.is_active).length > 0 && (
           <div className="space-y-2">
             <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider">Tus API Keys</h4>
-            {apiKeys.map(k => (
+            {apiKeys.filter(k => k.is_active).map(k => (
               <div key={k.id} className={`flex items-center justify-between rounded-lg border p-3 ${k.is_active ? 'border-border bg-surface/30' : 'border-border/50 bg-surface/10 opacity-50'}`}>
                 <div className="flex items-center gap-3">
                   <Bot size={16} className={k.is_active ? 'text-primary' : 'text-text-muted'} />
@@ -333,7 +333,7 @@ export default function IntegrationsSection() {
           </div>
         )}
 
-        {apiKeys.length === 0 && !newlyGeneratedKey && (
+        {apiKeys.filter(k => k.is_active).length === 0 && !newlyGeneratedKey && (
           <div className="text-center py-6 text-text-muted">
             <Key size={28} className="mx-auto mb-2 opacity-40" />
             <p className="text-sm">No tienes API Keys. Genera una para conectar sitios WordPress.</p>
