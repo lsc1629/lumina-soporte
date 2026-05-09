@@ -151,7 +151,17 @@ export default function IntegrationsSection() {
           setShowNewKey(true);
         }
         setNewKeyLabel('');
-        await loadApiKeys();
+        // Agregar la nueva key al estado local en lugar de recargar toda la lista
+        const newKey: ApiKeyRow = {
+          id: crypto.randomUUID(),
+          user_id: targetUserId,
+          key_prefix: result.prefix as string,
+          label: result.label as string,
+          is_active: true,
+          created_at: new Date().toISOString(),
+          last_used_at: null,
+        };
+        setApiKeys(prev => [newKey, ...prev]);
       } else {
         alert(`Error al generar API Key (HTTP ${res.status}): ${result.error || result.message || text.slice(0, 200)}`);
       }
