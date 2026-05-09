@@ -102,14 +102,14 @@ export default function IntegrationsSection() {
     if (data) setApiKeys(data as ApiKeyRow[]);
   };
 
-  const handleGenerateKey = async (targetUserId?: string) => {
+  const handleGenerateKey = async (targetUserId?: string, labelOverride?: string) => {
     setGeneratingKey(true);
     setNewlyGeneratedKey(null);
     setForClientKey(null);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
-      const body: Record<string, unknown> = { label: newKeyLabel || 'Default' };
+      const body: Record<string, unknown> = { label: labelOverride || newKeyLabel || 'Default' };
       if (targetUserId) body.target_user_id = targetUserId;
       const res = await fetch(`${SUPABASE_URL}/functions/v1/generate-api-key`, {
         method: 'POST',
@@ -240,7 +240,7 @@ export default function IntegrationsSection() {
                 </select>
               </div>
               <button
-                onClick={() => selectedClientId && handleGenerateKey(selectedClientId)}
+                onClick={() => selectedClientId && handleGenerateKey(selectedClientId, clients.find(c => c.id === selectedClientId)?.full_name || undefined)}
                 disabled={generatingKey || !selectedClientId}
                 className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover transition-colors disabled:opacity-50 shrink-0"
               >
@@ -270,28 +270,6 @@ export default function IntegrationsSection() {
             )}
           </div>
         )}
-
-        {/* Generate new key (para el usuario actual) */}
-        <div className="flex items-end gap-3">
-          <div className="flex-1 space-y-1">
-            <label className="text-xs text-text-muted">Etiqueta (opcional)</label>
-            <input
-              type="text"
-              value={newKeyLabel}
-              onChange={e => setNewKeyLabel(e.target.value)}
-              placeholder="Ej: Producción, Staging..."
-              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-white outline-none focus:border-primary"
-            />
-          </div>
-          <button
-            onClick={() => handleGenerateKey()}
-            disabled={generatingKey}
-            className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover transition-colors disabled:opacity-50 shrink-0"
-          >
-            {generatingKey ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
-            Generar API Key
-          </button>
-        </div>
 
         {/* Existing keys list */}
         {apiKeys.length > 0 && (

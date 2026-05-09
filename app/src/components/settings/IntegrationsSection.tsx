@@ -184,28 +184,6 @@ export default function IntegrationsSection() {
           </div>
         )}
 
-        {/* Generate new key */}
-        <div className="flex items-end gap-3">
-          <div className="flex-1 space-y-1">
-            <label className="text-xs text-text-muted">Etiqueta (opcional)</label>
-            <input
-              type="text"
-              value={newKeyLabel}
-              onChange={e => setNewKeyLabel(e.target.value)}
-              placeholder="Ej: Producción, Staging..."
-              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-white outline-none focus:border-primary"
-            />
-          </div>
-          <button
-            onClick={handleGenerateKey}
-            disabled={generatingKey}
-            className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover transition-colors disabled:opacity-50 shrink-0"
-          >
-            {generatingKey ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
-            Generar API Key
-          </button>
-        </div>
-
         {/* Existing keys list */}
         {apiKeys.length > 0 && (
           <div className="space-y-2">
