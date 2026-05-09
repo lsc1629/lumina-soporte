@@ -170,10 +170,11 @@ export default function IntegrationsSection() {
     if (!revokeConfirmId) return;
     const keyId = revokeConfirmId;
     setRevokingKey(keyId);
-    // Actualizar estado local inmediatamente — la key desaparece al instante
-    setApiKeys(prev => prev.map(k => k.id === keyId ? { ...k, is_active: false } : k));
+    // Eliminar del estado local inmediatamente
+    setApiKeys(prev => prev.filter(k => k.id !== keyId));
     setRevokeConfirmId(null);
-    await supabase.from('api_keys').update({ is_active: false }).eq('id', keyId);
+    // Eliminar físicamente de la base de datos
+    await supabase.from('api_keys').delete().eq('id', keyId);
     setRevokingKey(null);
   };
 
@@ -266,7 +267,16 @@ export default function IntegrationsSection() {
                 </select>
               </div>
               <button
-                onClick={() => selectedClientId && handleGenerateKey(selectedClientId, clients.find(c => c.id === selectedClientId)?.full_name || undefined)}
+                onClick={async () => {
+                  if (!selectedClientId) return;
+                  const client = clients.find(c => c.id === selectedClientId);
+                  if (!client) return;
+                  // Obtener el primer proyecto del cliente para incluir en la etiqueta
+                  const { data: projects } = await supabase.from('projects').select('name').eq('owner_id', selectedClientId).limit(1);
+                  const projectName = projects?.[0]?.name || '';
+                  const label = projectName ? `${client.full_name} — ${projectName}` : client.full_name;
+                  handleGenerateKey(selectedClientId, label);
+                }}
                 disabled={generatingKey || !selectedClientId}
                 className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover transition-colors disabled:opacity-50 shrink-0"
               >
@@ -297,19 +307,18 @@ export default function IntegrationsSection() {
           </div>
         )}
 
-        {/* Existing keys list — solo activas */}
-        {apiKeys.filter(k => k.is_active).length > 0 && (
+        {/* Existing keys list */}
+        {apiKeys.length > 0 && (
           <div className="space-y-2">
             <h4 className="text-xs font-semibold text-text-muted uppercase tracking-wider">Tus API Keys</h4>
-            {apiKeys.filter(k => k.is_active).map(k => (
-              <div key={k.id} className={`flex items-center justify-between rounded-lg border p-3 ${k.is_active ? 'border-border bg-surface/30' : 'border-border/50 bg-surface/10 opacity-50'}`}>
+            {apiKeys.map(k => (
+              <div key={k.id} className="flex items-center justify-between rounded-lg border border-border bg-surface/30 p-3">
                 <div className="flex items-center gap-3">
-                  <Bot size={16} className={k.is_active ? 'text-primary' : 'text-text-muted'} />
+                  <Bot size={16} className="text-primary" />
                   <div>
                     <div className="flex items-center gap-2">
                       <code className="text-sm text-white">{k.key_prefix}••••••••</code>
                       <span className="text-xs text-text-muted">— {k.label}</span>
-                      {!k.is_active && <span className="rounded bg-error/20 px-1.5 py-0.5 text-[10px] font-semibold text-error">Revocada</span>}
                     </div>
                     <div className="flex gap-3 text-[11px] text-text-muted mt-0.5">
                       {isAdmin && k.user_id && (
@@ -320,22 +329,20 @@ export default function IntegrationsSection() {
                     </div>
                   </div>
                 </div>
-                {k.is_active && (
-                  <button
-                    onClick={() => handleRevokeKey(k.id)}
-                    disabled={revokingKey === k.id}
-                    className="flex items-center gap-1 rounded-lg border border-error/30 px-3 py-1.5 text-xs font-medium text-error hover:bg-error/10 transition-colors disabled:opacity-50"
-                  >
-                    {revokingKey === k.id ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
-                    Revocar
-                  </button>
-                )}
+                <button
+                  onClick={() => handleRevokeKey(k.id)}
+                  disabled={revokingKey === k.id}
+                  className="flex items-center gap-1 rounded-lg border border-error/30 px-3 py-1.5 text-xs font-medium text-error hover:bg-error/10 transition-colors disabled:opacity-50"
+                >
+                  {revokingKey === k.id ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
+                  Revocar
+                </button>
               </div>
             ))}
           </div>
         )}
 
-        {apiKeys.filter(k => k.is_active).length === 0 && !newlyGeneratedKey && (
+        {apiKeys.length === 0 && !newlyGeneratedKey && (
           <div className="text-center py-6 text-text-muted">
             <Key size={28} className="mx-auto mb-2 opacity-40" />
             <p className="text-sm">No tienes API Keys. Genera una para conectar sitios WordPress.</p>
