@@ -97,25 +97,25 @@ export default function IntegrationsSection() {
   };
 
   const loadApiKeys = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
 
-    let query = supabase
-      .from('api_keys')
-      .select('id, user_id, key_prefix, label, is_active, created_at, last_used_at')
-      .order('created_at', { ascending: false });
-
-    if (isAdmin) {
-      // Admin ve sus keys + keys de todos los clientes
-      const { data: clientProfiles } = await supabase.from('profiles').select('id').eq('role', 'client');
-      const clientIds = (clientProfiles || []).map(c => c.id);
-      query = query.in('user_id', [user.id, ...clientIds]);
-    } else {
-      query = query.eq('user_id', user.id);
+    try {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/list-api-keys`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+          'apikey': SUPABASE_ANON_KEY,
+        },
+      });
+      const result = await res.json();
+      if (result.success && result.keys) {
+        setApiKeys(result.keys as ApiKeyRow[]);
+      }
+    } catch (e) {
+      console.error('[loadApiKeys] error:', e);
     }
-
-    const { data } = await query;
-    if (data) setApiKeys(data as ApiKeyRow[]);
   };
 
   const handleGenerateKey = async (targetUserId?: string, labelOverride?: string) => {
