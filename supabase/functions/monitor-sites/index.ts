@@ -123,7 +123,8 @@ async function checkProject(project: Project): Promise<CheckResult> {
 
   const siteUrl = project.url.startsWith('http') ? project.url : `https://${project.url}`;
 
-  // 1. Basic reachability + capture HTML body for keyword check
+  // 1. Basic reachability + HTML content validation
+  let htmlBody = '';
   try {
     const start = Date.now();
     const res = await safeFetch(siteUrl);
@@ -131,6 +132,36 @@ async function checkProject(project: Project): Promise<CheckResult> {
     result.statusCode = res.status;
     result.reachable = res.ok;
     result.sslValid = siteUrl.startsWith('https');
+
+    // Read body for content validation (even if HTTP 200, content may indicate failure)
+    if (res.ok) {
+      try { htmlBody = await res.text(); } catch { htmlBody = ''; }
+      const bodyLower = htmlBody.toLowerCase();
+
+      // Detect common error pages that return HTTP 200
+      const errorIndicators = [
+        { keyword: 'error establishing database connection', label: 'Database connection error' },
+        { keyword: 'briefly unavailable for scheduled maintenance', label: 'WordPress maintenance mode' },
+        { keyword: 'there has been a critical error', label: 'WordPress critical error' },
+        { keyword: '502 bad gateway', label: '502 Bad Gateway' },
+        { keyword: '503 service unavailable', label: '503 Service Unavailable' },
+        { keyword: '504 gateway timeout', label: '504 Gateway Timeout' },
+        { keyword: 'white screen of death', label: 'White screen error' },
+      ];
+      for (const { keyword, label } of errorIndicators) {
+        if (bodyLower.includes(keyword)) {
+          result.reachable = false;
+          result.error = `${label} — sitio responde HTTP 200 pero muestra página de error`;
+          break;
+        }
+      }
+
+      // Verify the page contains basic HTML structure (not a blank page or non-HTML response)
+      if (result.reachable && !htmlBody.match(/<(html|body|title|!doctype)/i)) {
+        result.reachable = false;
+        result.error = 'Respuesta HTTP 200 pero no contiene HTML válido';
+      }
+    }
 
   } catch (e) {
     result.error = e instanceof Error ? e.message : 'Connection failed';
@@ -269,6 +300,39 @@ async function checkProject(project: Project): Promise<CheckResult> {
           break;
         }
       } catch { /* try next */ }
+    }
+  }
+
+  // ── Deep WP REST API check: verify /wp-json/wp/v2/posts returns real data ──
+  if (isWp) {
+    const postsCandidates: string[] = [];
+    const wpBase = (project.admin_url || project.url || '').replace(/\/wp-admin\/?$/, '').replace(/\/+$/, '');
+    if (wpBase.startsWith('http')) {
+      postsCandidates.push(`${wpBase}/wp-json/wp/v2/posts?per_page=1`);
+    } else if (wpBase) {
+      postsCandidates.push(`https://${wpBase}/wp-json/wp/v2/posts?per_page=1`);
+    }
+    postsCandidates.push(`${siteUrl}/wp-json/wp/v2/posts?per_page=1`);
+
+    let postsWorking = false;
+    for (const postsUrl of postsCandidates) {
+      try {
+        const res = await safeFetch(postsUrl, 8000);
+        if (res.ok) {
+          const ct = res.headers.get('content-type') || '';
+          if (ct.includes('application/json')) {
+            const data = await res.json() as unknown;
+            if (Array.isArray(data)) {
+              postsWorking = true;
+              break;
+            }
+          }
+        }
+      } catch { /* try next */ }
+    }
+    if (!postsWorking) {
+      result.wpApiOk = false;
+      if (!result.error) result.error = 'WP REST API (/wp/v2/posts) no devuelve datos válidos';
     }
   }
 
