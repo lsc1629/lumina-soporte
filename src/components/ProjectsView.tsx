@@ -83,7 +83,9 @@ export default function ProjectsView({ onNewProject, onEditProject }: ProjectsVi
         ...p,
         update_count: pluginsByProject.get(p.id) || 0,
       }));
-      setProjects(withCounts);
+      // Deduplicar por ID (por si acaso hay duplicados en la respuesta)
+      const uniqueProjects = Array.from(new Map(withCounts.map(p => [p.id, p])).values());
+      setProjects(uniqueProjects);
     }
     setLoading(false);
   };
