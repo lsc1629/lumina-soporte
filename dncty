@@ -1,0 +1,413 @@
+[?1049h[>4;2m[?1h=[?2004h[?1004h[1;28r[?12h[?12l[22;2t[22;1t[?25l[28;1H"e="der" [New]]11;?]10;?[1;1H[?25h[?4m[28;1H
+[?25lEntering Ex mode.  Type "visual" to go to Normal mode.[?25h
+:e=\ text-sm foex>dnceo}
+[?25l"= text-sm foex>dnceo}" [New][?25h
+: coletext- colex>dHe  }bele={foex>dncite=\ text-sm foex>dut coletext- colex>dHe  ate  e className=\"te"t
+[27;106Hp[28;1Haec<   e className=\"te=\paee) coletext- colex>dHe  }bele={foex>dncite=\ text-sm foex>dut coletext- colex
+[27;106H>[28;1HdHe  ate  e hie=  ut  urn<ine coletext- colex>dHe  }bele={foex>dncite=\ text-sm foex>dut coletext- colex>
+[27;106HC[28;1H col1  coletext- colex>dHe  }be   coletext- cova col\" coletext- colex>dHe  }bele={foex>dncite=\ text-sm 
+[27;106Hf[28;1Hva coletext- colex>dHe  }s</opti coletext- colex>dHe  }bele={foex>dncite=Ca co10 colut coletextn>     });
+[?25l[97m[41mE492: Not an editor command: coletext- colex>dHe  }bele={foex>dncite=\ text-sm foex>dut coletext- colex>d[m
+[27;106H[97m[41mH[28;1He  ate  e className=\"te"tpaec<   e className=\"te=\paee) coletext- colex>dHe  }bele={foex>dncite=\ text-[m
+[27;106H[97m[41ms[28;1Hm foex>dut coletext- colex>dHe  ate  e hie=  ut  urn<ine coletext- colex>dHe  }bele={foex>dncite=\ text-s[m
+[27;106H[97m[41mm[28;1H foex>dut coletext- colex>C col1  coletext- colex>dHe  }be   coletext- cova col\" coletext- colex>dHe  }b[m
+[27;106H[97m[41me[28;1Hle={foex>dncite=\ text-sm fva coletext- colex>dHe  }s</opti coletext- colex>dHe  }bele={foex>dncite=Ca co[m
+[27;106H[97m[41m1[28;1H0 colut coletextn>     });[?25h[m
+:    or  });
+[?25l[97m[41mE492: Not an editor command: or  });[?25h[m
+:    s lu    15    s  bo  mex  }uted\">P  });rd-xl ex  }uted\">P  });rue  });
+[?25l[97m[41mE146: Regular expressions can't be delimited by letters[?25h[m
+:    s &e }
+[?25l[97m[41mE486: Pattern not found: e }[?25h[m
+:"  fo}
+:  });
+[?25l[97m[41mE488: Trailing characters: );[?25h[m
+:    s ty size    } "  fo}
+[?25l[97m[41mE146: Regular expressions can't be delimited by letters[?25h[m
+: va    \""  fo}
+[?25l[97m[41mE1124: ":var" cannot be used in legacy Vim script[?25h[m
+:   6   6 ut   6op   6   6 ut   6op   6   le   6   6 ut   6op   6   6 ut   6op   6   le   6   6 ut   6op 
+[27;106H [28;1H 6   6 ut   6op   6   le   6   6 ut   6op   6   6 ut   6op   6   le   6   6 ut   6op   6   6 ut   6op   6
+[27;106H [28;1H  le   6   6 ut   6op   6   6 ut   6op   6   le   6   6 ut   6op   6   6 utte   6  ed   6   6 ut   6op  d
+[27;106He[28;1H Logs</label>
+[?25l[97m[41mE492: Not an editor command: 6   6 ut   6op   6   6 ut   6op   6   le   6   6 ut   6op   6   6 ut   6op  [m
+[27;106H[97m[41m [28;1H6   le   6   6 ut   6op   6   6 ut   6op   6   le   6   6 ut   6op   6   6 ut   6op   6   le   6   6 ut  [m
+[27;106H[97m[41m [28;1H6op   6   6 ut   6op   6   le   6   6 ut   6op   6   6 ut   6op   6   le   6   6 ut   6op   6   6 utte   [m
+[27;106H[97m[41m6[28;1H  ed   6   6 ut   6op  de Logs</label>[?25h[m
+:              <select value={form.log_retention_days} onChange={e => update(\\'log_retention_days\\', e.
+[27;106Ht[28;1Harget.value)} className=\"w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white 
+[27;106Ho[28;1Hutline-none focus:border-primary transition-all\">
+[?25l[97m[41mE488: Trailing characters: select value={form.log_retention_days} onChange={e => update(\\'log_retention_[m
+[27;106H[97m[41md[28;1Hays\\', e.target.value)} className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm t[m
+[27;106H[97m[41me[28;1Hxt-white outline-none focus:border-primary transition-all">[?25h[m
+:                <option value=\"30\">30 d\\u00edas</option>
+[?25l[97m[41mE488: Trailing characters: option value="30">30 d\\u00edas</option>[?25h[m
+:                <option value=\"60\">60 d\\u00edas</option>
+[?25l[97m[41mE488: Trailing characters: option value="60">60 d\\u00edas</option>[?25h[m
+:                <option value=\"90\">90 d\\u00edas</option>
+[?25l[97m[41mE488: Trailing characters: option value="90">90 d\\u00edas</option>[?25h[m
+:                <option value=\"180\">180 d\\u00edas</option>
+[?25l[97m[41mE488: Trailing characters: option value="180">180 d\\u00edas</option>[?25h[m
+:                <option value=\"365\">365 d\\u00edas</option>
+[?25l[97m[41mE488: Trailing characters: option value="365">365 d\\u00edas</option>[?25h[m
+:              </select>
+[?25l[97m[41mE488: Trailing characters: /select>[?25h[m
+:              <p className=\"text-[11px] text-text-muted\">Logs m\\u00e1s antiguos se purgan autom\\u00e
+[27;106H1[28;1Hticamente.</p>
+[?25l[97m[41mE488: Trailing characters: className="text-[11px] text-text-muted">Logs m\\u00e1s antiguos se purgan auto[m
+[27;106H[97m[41mm[28;1H\\u00e1ticamente.</p>[?25h[m
+:            </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:            <div className=\"space-y-2\">
+[?25l[97m[41mE488: Trailing characters: div className="space-y-2">[?25h[m
+:              <label className=\"text-sm font-medium text-text-muted\">Slug P\\u00e1gina de Estado</labe
+[27;106Hl[28;1H>
+[?25l[97m[41mE488: Trailing characters: abel className="text-sm font-medium text-text-muted">Slug P\\u00e1gina de Esta[m
+[27;106H[97m[41md[28;1Ho</label>[?25h[m
+:              <div className=\"flex items-center gap-2\">
+[?25l[97m[41mE488: Trailing characters: div className="flex items-center gap-2">[?25h[m
+:                <span className=\"text-xs text-text-muted whitespace-nowrap\">/status/</span>
+[?25l[97m[41mE488: Trailing characters: span className="text-xs text-text-muted whitespace-nowrap">/status/</span>[?25h[m
+:                <input type=\"text\" value={form.public_slug} onChange={e => update(\\'public_slug\\', e
+[27;106H.[28;1Htarget.value.toLowerCase().replace(/[^a-z0-9-]/g, \\'\\'))} placeholder=\"mi-tienda\" className=\"w-full 
+[27;106Hr[28;1Hounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-primary 
+[27;106Ht[28;1Hransition-all\" />
+[?25l[97m[41mE488: Trailing characters: input type="text" value={form.public_slug} onChange={e => update(\\'public_slu[m
+[27;106H[97m[41mg[28;1H\\', e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, \\'\\'))} placeholder="mi-tienda" className="w-f[m
+[27;106H[97m[41mu[28;1Hll rounded-lg border border-border bg-surface px-4 py-3 text-sm text-white outline-none focus:border-prim[m
+[27;106H[97m[41ma[28;1Hry transition-all" />[?25h[m
+:              </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:            </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:          </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:          {form.public_slug && (
+[?25l[97m[41mE492: Not an editor command: {form.public_slug && ([?25h[m
+:            <div className=\"flex items-center gap-3 rounded-lg border border-accent/20 bg-accent/5 px-4
+[27;106H [28;1Hpy-3\">
+[?25l[97m[41mE488: Trailing characters: div className="flex items-center gap-3 rounded-lg border border-accent/20 bg-a[m
+[27;106H[97m[41mc[28;1Hcent/5 px-4 py-3">[?25h[m
+:              <input type=\"checkbox\" id=\"edit_status_page_enabled\" checked={form.status_page_enabled
+[27;106H}[28;1H onChange={e => setForm(f => ({ ...f, status_page_enabled: e.target.checked }))} className=\"h-4 w-4 roun
+[27;106Hd[28;1Hed border-border accent-primary cursor-pointer\" />
+[?25l[97m[41mE488: Trailing characters: input type="checkbox" id="edit_status_page_enabled" checked={form.status_page_[m
+[27;106H[97m[41me[28;1Hnabled} onChange={e => setForm(f => ({ ...f, status_page_enabled: e.target.checked }))} className="h-4 w-[m
+[27;106H[97m[41m4[28;1H rounded border-border accent-primary cursor-pointer" />[?25h[m
+:              <label htmlFor=\"edit_status_page_enabled\" className=\"text-sm text-white cursor-pointer\
+[27;106H"[28;1H>
+[?25l[97m[41mE488: Trailing characters: abel htmlFor="edit_status_page_enabled" className="text-sm text-white cursor-p[m
+[27;106H[97m[41mo[28;1Hinter">[?25h[m
+:                Habilitar p\\u00e1gina p\\u00fablica en <span className=\"font-mono text-primary\">/stat
+[27;106Hu[28;1Hs/{form.public_slug}</span>
+[?25l[97m[41mE492: Not an editor command: Habilitar p\\u00e1gina p\\u00fablica en <span className=\"font-mono text-pri[m
+[27;106H[97m[41mm[28;1Hary\">/status/{form.public_slug}</span>[?25h[m
+:              </label>
+[?25l[97m[41mE488: Trailing characters: /label>[?25h[m
+:            </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:          )}
+[?25l[97m[41mE492: Not an editor command: )}[?25h[m
+:        </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:
+[?25l[97m[41mE749: Empty buffer[?25h[m
+:        {/* Lumina Agent */}
+[?25l[97m[41mE492: Not an editor command: {/* Lumina Agent */}[?25h[m
+:        {[\\'wordpress\\', \\'headless\\'].includes(form.platform) && projectId && (
+[?25l[97m[41mE492: Not an editor command: {[\\'wordpress\\', \\'headless\\'].includes(form.platform) && projectId && ([?25h[m
+:          <div className=\"space-y-6 border-t border-border pt-6\">
+[?25l[97m[41mE488: Trailing characters: div className="space-y-6 border-t border-border pt-6">[?25h[m
+:            <h2 className=\"font-display text-xl font-semibold text-white flex items-center gap-2\">
+[?25l[97m[41mE488: Trailing characters: h2 className="font-display text-xl font-semibold text-white flex items-center [m
+[27;106H[97m[41mg[28;1Hap-2">[?25h[m
+:              <Bot size={20} className=\"text-primary\" />
+[?25l[97m[41mE488: Trailing characters: Bot size={20} className="text-primary" />[?25h[m
+:              Lumina Agent
+[?25l[97m[41mE492: Not an editor command: Lumina Agent[?25h[m
+:            </h2>
+[?25l[97m[41mE488: Trailing characters: /h2>[?25h[m
+:            {form.site_token ? (
+[?25l[97m[41mE492: Not an editor command: {form.site_token ? ([?25h[m
+:              <div className=\"rounded-xl border border-success/30 bg-success/10 p-4 flex items-center g
+[27;106Ha[28;1Hp-3\">
+[?25l[97m[41mE488: Trailing characters: div className="rounded-xl border border-success/30 bg-success/10 p-4 flex item[m
+[27;106H[97m[41ms[28;1H-center gap-3">[?25h[m
+:                <div className=\"flex h-10 w-10 items-center justify-center rounded-lg bg-success/20\">
+[?25l[97m[41mE488: Trailing characters: div className="flex h-10 w-10 items-center justify-center rounded-lg bg-succes[m
+[27;106H[97m[41ms[28;1H/20">[?25h[m
+:                  <Wifi size={20} className=\"text-success\" />
+[?25l[97m[41mE488: Trailing characters: Wifi size={20} className="text-success" />[?25h[m
+:                </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:                <div className=\"flex-1\">
+[?25l[97m[41mE488: Trailing characters: div className="flex-1">[?25h[m
+:                  <div className=\"flex items-center gap-2\">
+[?25l[97m[41mE488: Trailing characters: div className="flex items-center gap-2">[?25h[m
+:                    <h4 className=\"text-sm font-bold text-success\">Agent Conectado</h4>
+[?25l[97m[41mE488: Trailing characters: h4 className="text-sm font-bold text-success">Agent Conectado</h4>[?25h[m
+:                    <CheckCircle2 size={14} className=\"text-success\" />
+[?25l[97m[41mE488: Trailing characters: CheckCircle2 size={14} className="text-success" />[?25h[m
+:                  </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:                  <p className=\"text-xs text-text-muted mt-0.5\">Conectado v\\u00eda API Key \\u2014 el
+[27;106H [28;1Hsitio se registr\\u00f3 autom\\u00e1ticamente.</p>
+[?25l[97m[41mE488: Trailing characters: className="text-xs text-text-muted mt-0.5">Conectado v\\u00eda API Key \\u2014[m
+[27;106H[97m[41m [28;1Hel sitio se registr\\u00f3 autom\\u00e1ticamente.</p>[?25h[m
+:                </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:                <button onClick={handleTestConnection} disabled={testing} className=\"flex items-center 
+[27;106Hg[28;1Hap-1.5 rounded-lg border border-success/30 bg-success/10 px-3 py-2 text-xs font-medium text-success hover
+[27;106H:[28;1Hbg-success/20 transition-colors disabled:opacity-50\">
+[?25l[97m[41mE488: Trailing characters: button onClick={handleTestConnection} disabled={testing} className="flex items[m
+[27;106H[97m[41m-[28;1Hcenter gap-1.5 rounded-lg border border-success/30 bg-success/10 px-3 py-2 text-xs font-medium text-succe[m
+[27;106H[97m[41ms[28;1Hs hover:bg-success/20 transition-colors disabled:opacity-50">[?25h[m
+:                  {testing ? <Loader2 size={14} className=\"animate-spin\" /> : <RefreshCw size={14} />}
+[?25l[97m[41mE492: Not an editor command: {testing ? <Loader2 size={14} className=\"animate-spin\" /> : <RefreshCw siz[m
+[27;106H[97m[41me[28;1H={14} />}[?25h[m
+:                  Verificar
+[?25l[97m[41mE492: Not an editor command: Verificar[?25h[m
+:                </button>
+[?25l[97m[41mE488: Trailing characters: /button>[?25h[m
+:              </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:            ) : (
+[?25l[97m[41mE492: Not an editor command: ) : ([?25h[m
+:              <div className=\"rounded-xl border border-warning/30 bg-warning/10 p-4 flex items-center g
+[27;106Ha[28;1Hp-3\">
+[?25l[97m[41mE488: Trailing characters: div className="rounded-xl border border-warning/30 bg-warning/10 p-4 flex item[m
+[27;106H[97m[41ms[28;1H-center gap-3">[?25h[m
+:                <div className=\"flex h-10 w-10 items-center justify-center rounded-lg bg-warning/20\">
+[?25l[97m[41mE488: Trailing characters: div className="flex h-10 w-10 items-center justify-center rounded-lg bg-warnin[m
+[27;106H[97m[41mg[28;1H/20">[?25h[m
+:                  <WifiOff size={20} className=\"text-warning\" />
+[?25l[97m[41mE488: Trailing characters: WifiOff size={20} className="text-warning" />[?25h[m
+:                </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:                <div className=\"flex-1\">
+[?25l[97m[41mE488: Trailing characters: div className="flex-1">[?25h[m
+:                  <h4 className=\"text-sm font-bold text-warning\">Agent No Conectado</h4>
+[?25l[97m[41mE488: Trailing characters: h4 className="text-sm font-bold text-warning">Agent No Conectado</h4>[?25h[m
+:                  <p className=\"text-xs text-text-muted mt-0.5\">Instala el plugin y pega tu API Key. E
+[27;106Hl[28;1H sitio se conectar\\u00e1 autom\\u00e1ticamente.</p>
+[?25l[97m[41mE488: Trailing characters: className="text-xs text-text-muted mt-0.5">Instala el plugin y pega tu API Key[m
+[27;106H[97m[41m.[28;1H El sitio se conectar\\u00e1 autom\\u00e1ticamente.</p>[?25h[m
+:                </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:              </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:            )}
+[?25l[97m[41mE492: Not an editor command: )}[?25h[m
+:            {testResult && (
+[?25l[97m[41mE492: Not an editor command: {testResult && ([?25h[m
+:              <div className={\`rounded-xl border p-4 space-y-2 \${testResult.connected ? \\'border-succ
+[27;106He[28;1Hss/30 bg-success/5\\' : \\'border-danger/30 bg-danger/5\\'}\`}>
+[?25l[97m[41mE488: Trailing characters: div className={\`rounded-xl border p-4 space-y-2 \${testResult.connected ? \\'[m
+[27;106H[97m[41mb[28;1Horder-success/30 bg-success/5\\' : \\'border-danger/30 bg-danger/5\\'}\`}>[?25h[m
+:                {testResult.connected ? (
+[?25l[97m[41mE492: Not an editor command: {testResult.connected ? ([?25h[m
+:                  <>
+[?25l[97m[41mE488: Trailing characters: >[?25h[m
+:                    <h4 className=\"text-sm font-bold text-success flex items-center gap-2\"><CheckCircl
+[27;106He[28;1H2 size={16} /> Conexi\\u00f3n Exitosa</h4>
+[?25l[97m[41mE488: Trailing characters: h4 className="text-sm font-bold text-success flex items-center gap-2"><CheckCi[m
+[27;106H[97m[41mr[28;1Hcle2 size={16} /> Conexi\\u00f3n Exitosa</h4>[?25h[m
+:                    <div className=\"grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2\">
+[?25l[97m[41mE488: Trailing characters: div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">[?25h[m
+:                      <div className=\"rounded-lg bg-surface p-2.5 text-center\"><p className=\"text-[10
+[27;106Hp[28;1Hx] text-text-muted uppercase\">Agent</p><p className=\"text-sm font-mono font-semibold text-white\">v{Str
+[27;106Hi[28;1Hng(testResult.agent_version || \\'?\\')}</p></div>
+[?25l[97m[41mE488: Trailing characters: div className="rounded-lg bg-surface p-2.5 text-center"><p className="text-[10[m
+[27;106H[97m[41mp[28;1Hx] text-text-muted uppercase">Agent</p><p className="text-sm font-mono font-semibold text-white">v{String[m
+[27;106H[97m[41m([28;1HtestResult.agent_version[?25h[m
+:                      <div className=\"rounded-lg bg-surface p-2.5 text-center\"><p className=\"text-[10
+[27;106Hp[28;1Hx] text-text-muted uppercase\">WordPress</p><p className=\"text-sm font-mono font-semibold text-white\">{
+[27;106HS[28;1Htring(testResult.wp_version || \\'?\\')}</p></div>
+[?25l[97m[41mE488: Trailing characters: div className="rounded-lg bg-surface p-2.5 text-center"><p className="text-[10[m
+[27;106H[97m[41mp[28;1Hx] text-text-muted uppercase">WordPress</p><p className="text-sm font-mono font-semibold text-white">{Str[m
+[27;106H[97m[41mi[28;1Hng(testResult.wp_version[?25h[m
+:                      <div className=\"rounded-lg bg-surface p-2.5 text-center\"><p className=\"text-[10
+[27;106Hp[28;1Hx] text-text-muted uppercase\">PHP</p><p className=\"text-sm font-mono font-semibold text-white\">{String
+[27;106H([28;1HtestResult.php_version || \\'?\\')}</p></div>
+[?25l[97m[41mE488: Trailing characters: div className="rounded-lg bg-surface p-2.5 text-center"><p className="text-[10[m
+[27;106H[97m[41mp[28;1Hx] text-text-muted uppercase">PHP</p><p className="text-sm font-mono font-semibold text-white">{String(te[m
+[27;106H[97m[41ms[28;1HtResult.php_version[?25h[m
+:                      <div className=\"rounded-lg bg-surface p-2.5 text-center\"><p className=\"text-[10
+[27;106Hp[28;1Hx] text-text-muted uppercase\">Plugins</p><p className=\"text-sm font-mono font-semibold text-white\">{St
+[27;106Hr[28;1Hing(testResult.plugins_total || 0)}</p></div>
+[?25l[97m[41mE488: Trailing characters: div className="rounded-lg bg-surface p-2.5 text-center"><p className="text-[10[m
+[27;106H[97m[41mp[28;1Hx] text-text-muted uppercase">Plugins</p><p className="text-sm font-mono font-semibold text-white">{Strin[m
+[27;106H[97m[41mg[28;1H(testResult.plugins_total[?25h[m
+:                    </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:                  </>
+[?25l[97m[41mE488: Trailing characters: />[?25h[m
+:                ) : (
+[?25l[97m[41mE492: Not an editor command: ) : ([?25h[m
+:                  <>
+[?25l[97m[41mE488: Trailing characters: >[?25h[m
+:                    <h4 className=\"text-sm font-bold text-danger flex items-center gap-2\"><WifiOff siz
+[27;106He[28;1H={16} /> Conexi\\u00f3n Fallida</h4>
+[?25l[97m[41mE488: Trailing characters: h4 className="text-sm font-bold text-danger flex items-center gap-2"><WifiOff [m
+[27;106H[97m[41ms[28;1Hize={16} /> Conexi\\u00f3n Fallida</h4>[?25h[m
+:                    <p className=\"text-xs text-text-muted\">{String(testResult.error || \\'Error descon
+[27;106Ho[28;1Hcido\\')}</p>
+[?25l[97m[41mE488: Trailing characters: className="text-xs text-text-muted">{String(testResult.error[?25h[m
+:                  </>
+[?25l[97m[41mE488: Trailing characters: />[?25h[m
+:                )}
+[?25l[97m[41mE492: Not an editor command: )}[?25h[m
+:              </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:            )}
+[?25l[97m[41mE492: Not an editor command: )}[?25h[m
+:            <div className=\"rounded-xl border border-border bg-surface/50 p-5 space-y-4\">
+[?25l[97m[41mE488: Trailing characters: div className="rounded-xl border border-border bg-surface/50 p-5 space-y-4">[?25h[m
+:              <h4 className=\"text-sm font-bold text-white\">Configuraci\\u00f3n R\\u00e1pida</h4>
+[?25l[97m[41mE488: Trailing characters: h4 className="text-sm font-bold text-white">Configuraci\\u00f3n R\\u00e1pida</[m
+[27;106H[97m[41mh[28;1H4>[?25h[m
+:              <ol className=\"space-y-3 text-sm text-text-muted\">
+[?25l[97m[41mE488: Trailing characters: ol className="space-y-3 text-sm text-text-muted">[?25h[m
+:                <li className=\"flex gap-3\">
+[?25l[97m[41mE488: Trailing characters: i className="flex gap-3">[?25h[m
+:                  <span className=\"flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-pr
+[27;106Hi[28;1Hmary/20 text-xs font-bold text-primary\">1</span>
+[?25l[97m[41mE488: Trailing characters: span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full[m
+[27;106H[97m[41m [28;1Hbg-primary/20 text-xs font-bold text-primary">1</span>[?25h[m
+:                  <div>
+[?25l[97m[41mE488: Trailing characters: div>[?25h[m
+:                    <p className=\"text-white font-medium\">Descarga e instala el plugin</p>
+[?25l[97m[41mE488: Trailing characters: className="text-white font-medium">Descarga e instala el plugin</p>[?25h[m
+:                    <p className=\"text-xs mb-2\">Sube el ZIP en <strong className=\"text-white\">Plugin
+[27;106Hs[28;1H \\u2192 A\\u00f1adir nuevo \\u2192 Subir plugin</strong></p>
+[?25l[97m[41mE488: Trailing characters: className="text-xs mb-2">Sube el ZIP en <strong className="text-white">Plugins[m
+[27;106H[97m[41m [28;1H\\u2192 A\\u00f1adir nuevo \\u2192 Subir plugin</strong></p>[?25h[m
+:                    <a href=\"/lumina-agent.zip\" download className=\"inline-flex items-center gap-1.5 
+[27;106Hr[28;1Hounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-pr
+[27;106Hi[28;1Hmary/20 transition-colors\"><Download size={14} /> lumina-agent.zip</a>
+[?25l[97m[41mE488: Trailing characters: a href="/lumina-agent.zip" download className="inline-flex items-center gap-1.[m
+[27;106H[97m[41m5[28;1H rounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-[m
+[27;106H[97m[41mp[28;1Hrimary/20 transition-colors"><Download size={14} /> lumina-agent.zip</a>[?25h[m
+:                  </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:                </li>
+[?25l[97m[41mE488: Trailing characters: /li>[?25h[m
+:                <li className=\"flex gap-3\">
+[?25l[97m[41mE488: Trailing characters: i className="flex gap-3">[?25h[m
+:                  <span className=\"flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-pr
+[27;106Hi[28;1Hmary/20 text-xs font-bold text-primary\">2</span>
+[?25l[97m[41mE488: Trailing characters: span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full[m
+[27;106H[97m[41m [28;1Hbg-primary/20 text-xs font-bold text-primary">2</span>[?25h[m
+:                  <div>
+[?25l[97m[41mE488: Trailing characters: div>[?25h[m
+:                    <p className=\"text-white font-medium\">Pega tu API Key</p>
+[?25l[97m[41mE488: Trailing characters: className="text-white font-medium">Pega tu API Key</p>[?25h[m
+:                    <p className=\"text-xs\">Ve a <strong className=\"text-white\">WP Admin \\u2192 Ajus
+[27;106Ht[28;1Hes \\u2192 Lumina Agent</strong> y pega tu API Key.</p>
+[?25l[97m[41mE488: Trailing characters: className="text-xs">Ve a <strong className="text-white">WP Admin \\u2192 Ajust[m
+[27;106H[97m[41me[28;1Hs \\u2192 Lumina Agent</strong> y pega tu API Key.</p>[?25h[m
+:                    <p className=\"text-xs mt-1\">\\u00bfNo tienes API Key? Gen\\u00e9rala en <strong cl
+[27;106Ha[28;1HssName=\"text-white\">Configuraci\\u00f3n \\u2192 Integraciones</strong> de este panel.</p>
+[?25l[97m[41mE488: Trailing characters: className="text-xs mt-1">\\u00bfNo tienes API Key? Gen\\u00e9rala en <strong c[m
+[27;106H[97m[41ml[28;1HassName="text-white">Configuraci\\u00f3n \\u2192 Integraciones</strong> de este panel.</p>[?25h[m
+:                  </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:                </li>
+[?25l[97m[41mE488: Trailing characters: /li>[?25h[m
+:                <li className=\"flex gap-3\">
+[?25l[97m[41mE488: Trailing characters: i className="flex gap-3">[?25h[m
+:                  <span className=\"flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-pr
+[27;106Hi[28;1Hmary/20 text-xs font-bold text-primary\">3</span>
+[?25l[97m[41mE488: Trailing characters: span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full[m
+[27;106H[97m[41m [28;1Hbg-primary/20 text-xs font-bold text-primary">3</span>[?25h[m
+:                  <div>
+[?25l[97m[41mE488: Trailing characters: div>[?25h[m
+:                    <p className=\"text-white font-medium\">Listo</p>
+[?25l[97m[41mE488: Trailing characters: className="text-white font-medium">Listo</p>[?25h[m
+:                    <p className=\"text-xs\">El plugin validar\\u00e1 la key y registrar\\u00e1 el sitio
+[27;106H [28;1Hautom\\u00e1ticamente.</p>
+[?25l[97m[41mE488: Trailing characters: className="text-xs">El plugin validar\\u00e1 la key y registrar\\u00e1 el siti[m
+[27;106H[97m[41mo[28;1H autom\\u00e1ticamente.</p>[?25h[m
+:                  </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:                </li>
+[?25l[97m[41mE488: Trailing characters: /li>[?25h[m
+:              </ol>
+[?25l[97m[41mE488: Trailing characters: /ol>[?25h[m
+:            </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:          </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:        )}
+[?25l[97m[41mE492: Not an editor command: )}[?25h[m
+:
+[?25l[97m[41mE749: Empty buffer[?25h[m
+:        {error && (
+[?25l[97m[41mE492: Not an editor command: {error && ([?25h[m
+:          <div className=\"rounded-lg bg-danger/10 border border-danger/20 px-4 py-3 text-sm text-danger
+[27;106H\[28;1H">{error}</div>
+[?25l[97m[41mE488: Trailing characters: div className="rounded-lg bg-danger/10 border border-danger/20 px-4 py-3 text-[m
+[27;106H[97m[41ms[28;1Hm text-danger">{error}</div>[?25h[m
+:        )}
+[?25l[97m[41mE492: Not an editor command: )}[?25h[m
+:
+[?25l[97m[41mE749: Empty buffer[?25h[m
+:        <div className=\"flex items-center justify-between border-t border-border pt-6\">
+[?25l[97m[41mE488: Trailing characters: div className="flex items-center justify-between border-t border-border pt-6">[?25h[m
+:          <button onClick={handleDelete} className=\"flex cursor-pointer items-center gap-2 rounded-lg b
+[27;106Ho[28;1Hrder border-danger/30 bg-danger/10 px-4 py-2.5 text-sm font-medium text-danger hover:bg-danger/20 transit
+[27;106Hi[28;1Hon-colors\">
+[?25l[97m[41mE488: Trailing characters: button onClick={handleDelete} className="flex cursor-pointer items-center gap-[m
+[27;106H[97m[41m2[28;1H rounded-lg border border-danger/30 bg-danger/10 px-4 py-2.5 text-sm font-medium text-danger hover:bg-dan[m
+[27;106H[97m[41mg[28;1Her/20 transition-colors">[?25h[m
+:            <Trash2 size={16} /> Eliminar Proyecto
+[?25l[97m[41mE488: Trailing characters: Trash2 size={16} /> Eliminar Proyecto[?25h[m
+:          </button>
+[?25l[97m[41mE488: Trailing characters: /button>[?25h[m
+:          <div className=\"flex gap-3\">
+[?25l[97m[41mE488: Trailing characters: div className="flex gap-3">[?25h[m
+:            <button onClick={onCancel} className=\"cursor-pointer rounded-lg px-6 py-2.5 text-sm font-me
+[27;106Hd[28;1Hium text-text-muted hover:bg-surface-hover hover:text-white transition-colors\">Cancelar</button>
+[?25l[97m[41mE488: Trailing characters: button onClick={onCancel} className="cursor-pointer rounded-lg px-6 py-2.5 tex[m
+[27;106H[97m[41mt[28;1H-sm font-medium text-text-muted hover:bg-surface-hover hover:text-white transition-colors">Cancelar</butt[m
+[27;106H[97m[41mo[28;1Hn>[?25h[m
+:            <button onClick={handleSave} disabled={saving} className=\"flex cursor-pointer items-center 
+[27;106Hg[28;1Hap-2 rounded-lg bg-primary px-8 py-2.5 text-sm font-medium text-white hover:bg-primary-hover shadow-lg sh
+[27;106Ha[28;1Hdow-primary/20 disabled:opacity-70 transition-colors\">
+[?25l[97m[41mE488: Trailing characters: button onClick={handleSave} disabled={saving} className="flex cursor-pointer i[m
+[27;106H[97m[41mt[28;1Hems-center gap-2 rounded-lg bg-primary px-8 py-2.5 text-sm font-medium text-white hover:bg-primary-hover [m
+[27;106H[97m[41ms[28;1Hhadow-lg shadow-primary/20 disabled:opacity-70 transition-colors">[?25h[m
+:              {saving ? <Loader2 size={16} className=\"animate-spin\" /> : <Save size={16} />}
+[?25l[97m[41mE492: Not an editor command: {saving ? <Loader2 size={16} className=\"animate-spin\" /> : <Save size={16}[m
+[27;106H[97m[41m [28;1H/>}[?25h[m
+:              Guardar Cambios
+[?25l[97m[41mE492: Not an editor command: Guardar Cambios[?25h[m
+:            </button>
+[?25l[97m[41mE488: Trailing characters: /button>[?25h[m
+:          </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:        </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:      </motion.div>
+[?25l[97m[41mE488: Trailing characters: /motion.div>[?25h[m
+:    </div>
+[?25l[97m[41mE488: Trailing characters: /div>[?25h[m
+:  );
+[?25l[97m[41mE492: Not an editor command: );[?25h[m
+:}
+[?25l[97m[41mE1128: } without {[?25h[m
+:'''
+[?25l[97m[41mE492: Not an editor command: '''[?25h[m
+:with open('/Users/luissalascortes/Library/Mobile Documents/com~apple~CloudDocs/Proyectos Windsurf/Lumina
+[27;106H-[28;1HSoporte/app/src/components/EditProjectView.tsx', 'w') as f:
+[?25l[97m[41mE492: Not an editor command: with open('/Users/luissalascortes/Library/Mobile Documents/com~apple~CloudDo[m
+[27;106H[97m[41mc[28;1Hs/Proyectos Windsurf/Lumina-Soporte/app/src/components/EditProjectView.tsx', 'w') as f:[?25h[m
+:    f.write(content)
+[?25l".write(content)" [Not edited][New] --No lines in buffer-- ((1) of 2)[?25h
+:print('OK')
+[?25l[97m[41mE488: Trailing characters: ('OK')[?25h[m
+:"
+:
+:[?1004l[?2004l[?1l>[?1049l[>4;mVim: Caught deadly signal HUP
+Vim: Finished.
+[28;1H[23;2t[23;1t
