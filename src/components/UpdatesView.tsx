@@ -26,7 +26,8 @@ import {
   ToggleLeft,
   ToggleRight,
   Upload,
-  Zap
+  Zap,
+  BadgeAlert
 } from 'lucide-react';
 import { supabase, SUPABASE_URL, SUPABASE_ANON_KEY } from '@/lib/supabase';
 import LoadingScreen from './LoadingScreen';
@@ -114,6 +115,7 @@ interface PluginInfo {
   needs_update: boolean;
   is_unknown: boolean;
   auto_update: boolean;
+  license_status: 'nulled' | 'pending_purchase' | null;
 }
 
 type ViewMode = 'clients' | 'projects' | 'summary' | 'plugins';
@@ -276,10 +278,11 @@ export default function UpdatesView() {
         if (fnData.wp_version) setWpVersion(fnData.wp_version);
         if (fnData.wp_latest_version) setWpLatestVersion(fnData.wp_latest_version);
 
-        const pluginList: PluginInfo[] = (fnData.plugins || []).map((p: PluginInfo) => ({
+        const pluginList: PluginInfo[] = (fnData.plugins || []).map((p: any) => ({
           ...p,
-          needs_update: !!(p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version),
-          is_unknown: p.latest_version === 'unknown',
+          license_status: p.license_status || null,
+          needs_update: !!(p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version && !p.license_status),
+          is_unknown: p.latest_version === 'unknown' && !p.license_status,
         }));
         setPlugins(pluginList);
         setSyncing(false);
@@ -295,7 +298,7 @@ export default function UpdatesView() {
     // Fallback: load directly from project_plugins table
     const { data } = await supabase
       .from('project_plugins')
-      .select('id, name, slug, current_version, latest_version, is_active, plugin_type, author, plugin_file, auto_update')
+      .select('id, name, slug, current_version, latest_version, is_active, plugin_type, author, plugin_file, auto_update, license_status')
       .eq('project_id', project.id)
       .order('name');
 
@@ -303,8 +306,9 @@ export default function UpdatesView() {
       ...p,
       plugin_file: p.plugin_file || '',
       auto_update: p.auto_update ?? false,
-      needs_update: !!(p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version),
-      is_unknown: p.latest_version === 'unknown',
+      license_status: p.license_status || null,
+      needs_update: !!(p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version && !p.license_status),
+      is_unknown: p.latest_version === 'unknown' && !p.license_status,
     }));
 
     setPlugins(pluginList);
@@ -323,10 +327,11 @@ export default function UpdatesView() {
       }
       if (fnData.wp_version) setWpVersion(fnData.wp_version);
       if (fnData.wp_latest_version) setWpLatestVersion(fnData.wp_latest_version);
-      setPlugins((fnData.plugins || []).map((p: PluginInfo) => ({
+      setPlugins((fnData.plugins || []).map((p: any) => ({
         ...p,
-        needs_update: !!(p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version),
-        is_unknown: p.latest_version === 'unknown',
+        license_status: p.license_status || null,
+        needs_update: !!(p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version && !p.license_status),
+        is_unknown: p.latest_version === 'unknown' && !p.license_status,
       })));
     } catch (e) {
       setSyncError(e instanceof Error ? e.message : 'Error de conexión con Edge Function');
@@ -374,10 +379,11 @@ export default function UpdatesView() {
         const fnData = await callFetchPlugins(selectedProject.id);
         if (fnData.wp_version) setWpVersion(fnData.wp_version);
         if (fnData.wp_latest_version) setWpLatestVersion(fnData.wp_latest_version);
-        setPlugins((fnData.plugins || []).map((p: PluginInfo) => ({
+        setPlugins((fnData.plugins || []).map((p: any) => ({
           ...p,
-          needs_update: !!(p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version),
-          is_unknown: p.latest_version === 'unknown',
+          license_status: p.license_status || null,
+          needs_update: !!(p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version && !p.license_status),
+          is_unknown: p.latest_version === 'unknown' && !p.license_status,
         })));
       } catch (syncErr) {
         console.error('[updatePlugin] resync failed:', syncErr);
@@ -438,6 +444,23 @@ export default function UpdatesView() {
     setUpdatingPluginId(null);
   };
 
+  const setLicenseStatus = async (plugin: PluginInfo, status: 'nulled' | 'pending_purchase' | null) => {
+    setUpdatingPluginId(plugin.id);
+    const { error } = await supabase
+      .from('project_plugins')
+      .update({ license_status: status })
+      .eq('id', plugin.id);
+    if (!error) {
+      setPlugins(prev => prev.map(p => p.id === plugin.id ? {
+        ...p,
+        license_status: status,
+        needs_update: status ? false : !!(p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version),
+        is_unknown: status ? false : p.latest_version === 'unknown',
+      } : p));
+    }
+    setUpdatingPluginId(null);
+  };
+
   const installPlugin = async (pluginSlug: string) => {
     if (!selectedProject) return;
     setSyncError(null);
@@ -451,10 +474,11 @@ export default function UpdatesView() {
         const fnData = await callFetchPlugins(selectedProject.id);
         if (fnData.wp_version) setWpVersion(fnData.wp_version);
         if (fnData.wp_latest_version) setWpLatestVersion(fnData.wp_latest_version);
-        setPlugins((fnData.plugins || []).map((p: PluginInfo) => ({
+        setPlugins((fnData.plugins || []).map((p: any) => ({
           ...p,
-          needs_update: !!(p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version),
-          is_unknown: p.latest_version === 'unknown',
+          license_status: p.license_status || null,
+          needs_update: !!(p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version && !p.license_status),
+          is_unknown: p.latest_version === 'unknown' && !p.license_status,
         })));
       }
     } catch (e) {
@@ -479,10 +503,11 @@ export default function UpdatesView() {
         const fnData = await callFetchPlugins(selectedProject.id);
         if (fnData.wp_version) setWpVersion(fnData.wp_version);
         if (fnData.wp_latest_version) setWpLatestVersion(fnData.wp_latest_version);
-        setPlugins((fnData.plugins || []).map((p: PluginInfo) => ({
+        setPlugins((fnData.plugins || []).map((p: any) => ({
           ...p,
-          needs_update: !!(p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version),
-          is_unknown: p.latest_version === 'unknown',
+          license_status: p.license_status || null,
+          needs_update: !!(p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version && !p.license_status),
+          is_unknown: p.latest_version === 'unknown' && !p.license_status,
         })));
         setSyncing(false);
       }
@@ -504,7 +529,7 @@ export default function UpdatesView() {
       plugin_type: APP_PLATFORMS.includes(selectedProject.platform) ? 'app' : newPlugin.plugin_type,
     }).select('id, name, slug, current_version, latest_version, is_active, plugin_type, author, plugin_file, auto_update').single();
     if (data) {
-      setPlugins(prev => [...prev, { ...data, plugin_file: data.plugin_file || '', auto_update: data.auto_update ?? false, needs_update: false, is_unknown: data.latest_version === 'unknown' }]);
+      setPlugins(prev => [...prev, { ...data, plugin_file: data.plugin_file || '', auto_update: data.auto_update ?? false, license_status: null, needs_update: false, is_unknown: data.latest_version === 'unknown' }]);
     }
     setNewPlugin({ name: '', slug: '', current_version: '', plugin_type: 'plugin' });
     setShowAddPlugin(false);
@@ -1068,13 +1093,15 @@ export default function UpdatesView() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.2, delay: index * 0.03 }}
-                      className={`flex items-center justify-between gap-4 p-4 transition-colors hover:bg-surface-hover ${plugin.needs_update ? 'border-l-2 border-l-warning' : plugin.is_unknown ? 'border-l-2 border-l-blue-400/50' : ''}`}
+                      className={`flex items-center justify-between gap-4 p-4 transition-colors hover:bg-surface-hover ${plugin.license_status === 'nulled' ? 'border-l-2 border-l-danger' : plugin.license_status === 'pending_purchase' ? 'border-l-2 border-l-amber-400' : plugin.needs_update ? 'border-l-2 border-l-warning' : plugin.is_unknown ? 'border-l-2 border-l-blue-400/50' : ''}`}
                     >
                       <div className="flex items-center gap-4 min-w-0">
                         <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
-                          plugin.needs_update ? 'bg-warning/10 text-warning' : plugin.is_unknown ? 'bg-blue-500/10 text-blue-400' : plugin.is_active ? 'bg-success/10 text-success' : 'bg-surface-hover text-text-muted'
+                          plugin.license_status === 'nulled' ? 'bg-danger/10 text-danger' : plugin.license_status === 'pending_purchase' ? 'bg-amber-500/10 text-amber-400' : plugin.needs_update ? 'bg-warning/10 text-warning' : plugin.is_unknown ? 'bg-blue-500/10 text-blue-400' : plugin.is_active ? 'bg-success/10 text-success' : 'bg-surface-hover text-text-muted'
                         }`}>
-                          {plugin.needs_update ? (
+                          {plugin.license_status ? (
+                            <BadgeAlert size={18} />
+                          ) : plugin.needs_update ? (
                             <motion.div animate={{ rotate: [0, 15, -15, 0] }} transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}>
                               <AlertCircle size={18} />
                             </motion.div>
@@ -1084,7 +1111,9 @@ export default function UpdatesView() {
                           <div className="flex items-center gap-2">
                             <p className="font-medium text-white truncate">{plugin.name}</p>
                             {!plugin.is_active && <span className="rounded-md bg-surface-hover px-1.5 py-0.5 text-[10px] font-medium text-text-muted border border-border">Inactivo</span>}
-                            {plugin.is_unknown && <span className="rounded-md bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-medium text-blue-400 border border-blue-500/20">Premium</span>}
+                            {plugin.is_unknown && !plugin.license_status && <span className="rounded-md bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-medium text-blue-400 border border-blue-500/20">Premium</span>}
+                            {plugin.license_status === 'nulled' && <span className="rounded-md bg-danger/10 px-1.5 py-0.5 text-[10px] font-medium text-danger border border-danger/20">⚠️ Nulled</span>}
+                            {plugin.license_status === 'pending_purchase' && <span className="rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-400 border border-amber-500/20">💳 Pendiente de compra</span>}
                             {plugin.auto_update && <span className="rounded-md bg-success/10 px-1.5 py-0.5 text-[10px] font-medium text-success border border-success/20">Auto-update</span>}
                           </div>
                           <div className="flex items-center gap-3 mt-0.5">
@@ -1097,7 +1126,14 @@ export default function UpdatesView() {
                       <div className="flex items-center gap-4 shrink-0">
                         {/* Version info with colors */}
                         <div className="text-right">
-                          {plugin.needs_update ? (
+                          {plugin.license_status ? (
+                            <div className="flex items-center gap-2 font-mono text-xs">
+                              <span className="text-text-muted font-medium">{plugin.current_version}</span>
+                              <span className={`rounded-md px-2 py-0.5 text-[10px] ${plugin.license_status === 'nulled' ? 'bg-danger/10 border border-danger/20 text-danger' : 'bg-amber-500/10 border border-amber-500/20 text-amber-400'}`}>
+                                {plugin.license_status === 'nulled' ? 'Sin licencia' : 'Por comprar'}
+                              </span>
+                            </div>
+                          ) : plugin.needs_update ? (
                             <div className="flex items-center gap-2 font-mono text-xs">
                               <span className="text-success font-medium">{plugin.current_version}</span>
                               <ArrowRight size={12} className="text-warning" />
@@ -1137,7 +1173,7 @@ export default function UpdatesView() {
                             </button>
                           )}
                           {/* Install button for unknown/unverified plugins */}
-                          {plugin.is_unknown && selectedProject && ['wordpress', 'headless'].includes(selectedProject.platform) && (
+                          {plugin.is_unknown && !plugin.license_status && selectedProject && ['wordpress', 'headless'].includes(selectedProject.platform) && (
                             <button
                               onClick={() => installPlugin(plugin.slug)}
                               disabled={syncing}
@@ -1146,6 +1182,38 @@ export default function UpdatesView() {
                             >
                               {syncing ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
                               Instalar
+                            </button>
+                          )}
+                          {/* Mark as nulled/pending purchase for unknown plugins */}
+                          {(plugin.is_unknown || plugin.license_status) && !plugin.license_status && (
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => setLicenseStatus(plugin, 'nulled')}
+                                disabled={updatingPluginId === plugin.id}
+                                title="Marcar como Nulled (sin licencia válida)"
+                                className="cursor-pointer rounded-lg border border-danger/30 bg-danger/5 px-2 py-1.5 text-[10px] font-medium text-danger hover:bg-danger/15 transition-colors disabled:opacity-50"
+                              >
+                                Nulled
+                              </button>
+                              <button
+                                onClick={() => setLicenseStatus(plugin, 'pending_purchase')}
+                                disabled={updatingPluginId === plugin.id}
+                                title="Marcar como pendiente de comprar licencia"
+                                className="cursor-pointer rounded-lg border border-amber-500/30 bg-amber-500/5 px-2 py-1.5 text-[10px] font-medium text-amber-400 hover:bg-amber-500/15 transition-colors disabled:opacity-50"
+                              >
+                                Pend. compra
+                              </button>
+                            </div>
+                          )}
+                          {/* Clear license status */}
+                          {plugin.license_status && (
+                            <button
+                              onClick={() => setLicenseStatus(plugin, null)}
+                              disabled={updatingPluginId === plugin.id}
+                              title="Quitar etiqueta de licencia"
+                              className="cursor-pointer rounded-lg border border-border bg-surface px-2 py-1.5 text-[10px] font-medium text-text-muted hover:text-white hover:bg-surface-hover transition-colors disabled:opacity-50"
+                            >
+                              Limpiar
                             </button>
                           )}
                           {/* Update button */}
