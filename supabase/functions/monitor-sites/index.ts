@@ -600,6 +600,20 @@ Deno.serve(async (req: Request) => {
         retried = true;
       }
 
+      // ── FASE 1b: Segundo retry para errores TLS específicos ──
+      // Hostinger/Cloudflare a veces corta el handshake TLS temporalmente
+      const isTlsError = statusReason?.toLowerCase().includes('tls') || statusReason?.toLowerCase().includes('handshake');
+      if (newStatus === 'down' && isTlsError && oldStatus !== 'down') {
+        console.log(`[monitor] TLS error on ${project.name}, waiting 60s for second retry...`);
+        await sleep(60000);
+        checkResult = await checkProject(project);
+        statusResult = determineStatus(project, checkResult);
+        newStatus = statusResult.status;
+        statusReason = statusResult.reason;
+        retried = true;
+        console.log(`[monitor] TLS retry result for ${project.name}: ${newStatus}`);
+      }
+
       // 3. Log the check (se registra el resultado final, post-retry)
       await sb.from('uptime_logs').insert({
         project_id: project.id,
