@@ -68,14 +68,14 @@ export default function ProjectsView({ onNewProject, onEditProject }: ProjectsVi
       .order('created_at', { ascending: false });
 
     if (projs) {
-      // Count outdated plugins from project_plugins
+      // Count outdated plugins from project_plugins — exclude license_status marked
       const { data: allPlugins } = await supabase
         .from('project_plugins')
-        .select('project_id, current_version, latest_version')
+        .select('project_id, current_version, latest_version, license_status')
         .in('project_id', projs.map(p => p.id));
       const pluginsByProject = new Map<string, number>();
       (allPlugins || []).forEach(pl => {
-        if (pl.latest_version && pl.latest_version !== '' && pl.latest_version !== 'unknown' && pl.latest_version !== pl.current_version) {
+        if (pl.latest_version && pl.latest_version !== '' && pl.latest_version !== 'unknown' && pl.latest_version !== pl.current_version && !pl.license_status) {
           pluginsByProject.set(pl.project_id, (pluginsByProject.get(pl.project_id) || 0) + 1);
         }
       });

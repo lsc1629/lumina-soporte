@@ -119,7 +119,7 @@ export default function ClientIssuesView() {
 
     const [pluginsRes, uptimeRes] = await Promise.all([
       supabase.from('project_plugins')
-        .select('id, project_id, name, slug, current_version, latest_version, plugin_type, is_active')
+        .select('id, project_id, name, slug, current_version, latest_version, plugin_type, is_active, license_status')
         .in('project_id', projectIds),
       supabase.from('uptime_logs')
         .select('project_id, status, response_time_ms, checked_at')
@@ -130,7 +130,7 @@ export default function ClientIssuesView() {
     // 1. Pending updates from project_plugins (comparing versions)
     const allPlugins = pluginsRes.data || [];
     const outdated = allPlugins.filter(p =>
-      p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version
+      p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version && !p.license_status
     );
     const updates: PendingUpdate[] = outdated.map(p => ({
       id: p.id,

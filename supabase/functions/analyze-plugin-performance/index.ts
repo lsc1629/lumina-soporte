@@ -89,7 +89,7 @@ Deno.serve(async (req) => {
     // Read ALL real plugins and themes for this project from the DB
     const { data: plugins, error: pErr } = await sb
       .from('project_plugins')
-      .select('name, slug, current_version, latest_version, is_active, plugin_type, author')
+      .select('name, slug, current_version, latest_version, is_active, plugin_type, author, license_status')
       .eq('project_id', projectId);
 
     if (pErr) return ok({ plugins: [], error: pErr.message });
@@ -102,12 +102,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    const results = plugins.map(plugin => {
+    const results = plugins.map((plugin: any) => {
       const slug = (plugin.slug || '').toLowerCase().replace(/\s+/g, '-');
       const known = KNOWN_PROFILES[slug];
 
-      // Determine if outdated based on REAL versions from DB
-      const outdated = isOutdated(plugin.current_version || '', plugin.latest_version || '');
+      // Determine if outdated based on REAL versions from DB — exclude plugins marked as nulled/pending_purchase
+      const outdated = !plugin.license_status && isOutdated(plugin.current_version || '', plugin.latest_version || '');
 
       // Resource impact: use known profile if available, otherwise mark as unknown
       let impact: 'high' | 'medium' | 'low' | 'unknown' = 'unknown';

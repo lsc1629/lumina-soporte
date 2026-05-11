@@ -147,7 +147,7 @@ export default function ReportsView() {
       supabase.from('projects').select('id, name, url, uptime_percent, owner_id').eq('is_active', true).order('name'),
       supabase.from('incidents').select('id, project_id, started_at').gte('started_at', sixMonthsAgo),
       supabase.from('profiles').select('id, full_name, email'),
-      supabase.from('project_plugins').select('id, project_id, current_version, latest_version'),
+      supabase.from('project_plugins').select('id, project_id, current_version, latest_version, license_status'),
       supabase.from('uptime_logs').select('project_id, status, response_time_ms, checked_at').gte('checked_at', sixMonthsAgo).order('checked_at', { ascending: false }),
     ]);
 
@@ -159,9 +159,9 @@ export default function ReportsView() {
 
     const profileMap = new Map(profiles.map(p => [p.id, p]));
 
-    // Count outdated plugins as "updates" (real data)
+    // Count outdated plugins as "updates" (real data) — exclude license_status marked
     const outdatedPlugins = allPlugins.filter(p =>
-      p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version
+      p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version && !p.license_status
     );
 
     // Calculate real avg uptime from last 30 days of logs

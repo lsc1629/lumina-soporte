@@ -204,7 +204,7 @@ export default function SiteHealthView() {
       const projPlugins = allPlugins.filter((pl: any) => pl.project_id === p.id);
       const plugins = projPlugins.filter((pl: any) => pl.plugin_type === 'plugin' || pl.plugin_type === 'app');
       const themes = projPlugins.filter((pl: any) => pl.plugin_type === 'theme');
-      const outdated = projPlugins.filter((pl: any) => pl.latest_version && pl.latest_version !== '' && pl.latest_version !== 'unknown' && pl.latest_version !== pl.current_version);
+      const outdated = projPlugins.filter((pl: any) => pl.latest_version && pl.latest_version !== '' && pl.latest_version !== 'unknown' && pl.latest_version !== pl.current_version && !pl.license_status);
 
       return {
         id: p.id, name: p.name, url: p.url, platform: p.platform, status: p.status || 'up',

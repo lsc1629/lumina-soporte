@@ -78,12 +78,12 @@ export default function ClientDashboard() {
     const myIncidents = (incidentsRes.data || []).filter(i => projectIds.has(i.project_id));
     setActiveIncidents(myIncidents.length);
 
-    // Fetch outdated plugins — exclude plugins with auto_update enabled
+    // Fetch outdated plugins — exclude plugins with auto_update enabled and license_status marked
     const { data: pluginsData } = myProjectIds.length > 0
-      ? await supabase.from('project_plugins').select('id, project_id, name, slug, current_version, latest_version, auto_update, plugin_type').in('project_id', myProjectIds)
+      ? await supabase.from('project_plugins').select('id, project_id, name, slug, current_version, latest_version, auto_update, plugin_type, license_status').in('project_id', myProjectIds)
       : { data: [] };
     const outdatedPlugins = (pluginsData || []).filter(p =>
-      !p.auto_update &&
+      !p.auto_update && !p.license_status &&
       p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version
     );
     setOutdatedCount(outdatedPlugins.length);

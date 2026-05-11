@@ -68,7 +68,7 @@ export default function Dashboard() {
     const [projectsRes, incidentsRes, pluginsRes, recentIncidentsRes, recentUpdatesRes, agentRes] = await Promise.all([
       supabase.from('projects').select('id, uptime_percent, response_time_ms, status, last_check_at').eq('is_active', true),
       supabase.from('incidents').select('id').in('status', ['investigating', 'identified', 'monitoring']),
-      supabase.from('project_plugins').select('id, current_version, latest_version'),
+      supabase.from('project_plugins').select('id, current_version, latest_version, license_status'),
       supabase.from('incidents').select('id, title, status, started_at, project:projects(name)').in('status', ['investigating', 'identified', 'monitoring']).order('started_at', { ascending: false }).limit(5),
       supabase.from('project_updates').select('id, name, status, applied_at, created_at, project:projects(name)').eq('status', 'completed').order('applied_at', { ascending: false }).limit(3),
       supabase.from('projects').select('id', { count: 'exact', head: true }).eq('is_active', true).not('site_token', 'is', null),
@@ -77,8 +77,8 @@ export default function Dashboard() {
 
     const projects = projectsRes.data || [];
     const activeIncidents = incidentsRes.data?.length || 0;
-    const pendingUpdates = (pluginsRes.data || []).filter(p => 
-      p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version
+    const pendingUpdates = (pluginsRes.data || []).filter(p =>
+      p.latest_version && p.latest_version !== '' && p.latest_version !== 'unknown' && p.latest_version !== p.current_version && !p.license_status
     ).length;
 
     // Calculate avgUptime from uptime_logs (last 24h) — counts 'warning' as operational
