@@ -930,7 +930,7 @@ Deno.serve(async (req: Request) => {
     // Read plugin data from DB (after cleanup) and refresh latest_version via wp.org
     const { data: allPlugins } = await sb
       .from('project_plugins')
-      .select('id, project_id, name, slug, current_version, latest_version, plugin_type, auto_update')
+      .select('id, project_id, name, slug, current_version, latest_version, plugin_type, auto_update, license_status')
       .in('project_id', projects.map((p: Project) => p.id));
 
     // ── Update latest_version from wp.org for plugins/themes that need it ──
@@ -986,12 +986,14 @@ Deno.serve(async (req: Request) => {
       } catch { /* core check optional */ }
     }
 
-    // Group outdated plugins by project — exclude 'unknown' (premium) AND plugins with auto_update enabled
+    // Group outdated plugins by project — exclude 'unknown', auto_update enabled, AND license_status marked
     const outdatedByProject = new Map<string, Array<{ id: string; project_id: string; name: string; current_version: string; latest_version: string }>>();
     if (allPlugins && allPlugins.length > 0) {
       for (const plugin of allPlugins) {
         // Skip plugins with auto-update enabled — WordPress will handle them automatically
         if ((plugin as any).auto_update === true) continue;
+        // Skip plugins marked as nulled or pending_purchase — these cannot be updated without license
+        if ((plugin as any).license_status) continue;
         if (plugin.latest_version && plugin.latest_version !== '' && plugin.latest_version !== 'unknown' && plugin.latest_version !== plugin.current_version) {
           const list = outdatedByProject.get(plugin.project_id) || [];
           list.push(plugin);
