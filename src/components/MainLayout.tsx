@@ -88,7 +88,7 @@ export default function MainLayout({ onLogout, onPreviewClient }: MainLayoutProp
   const loadBadgeCounts = async () => {
     const [incRes, pluginsRes, downRes] = await Promise.all([
       supabase.from('incidents').select('id, incident_number, title, created_at', { count: 'exact' }).in('status', ['investigating', 'identified', 'monitoring']).order('created_at', { ascending: false }).limit(5),
-      supabase.from('project_plugins').select('id, name, plugin_type, current_version, latest_version, project:projects(name)').neq('latest_version', '').neq('latest_version', 'unknown'),
+      supabase.from('project_plugins').select('id, name, plugin_type, current_version, latest_version, license_status, project:projects(name)').neq('latest_version', '').neq('latest_version', 'unknown').is('license_status', null),
       supabase.from('projects').select('id, name', { count: 'exact', head: true }).eq('status', 'down').eq('is_active', true),
     ]);
     setIncidentCount(incRes.count || 0);
